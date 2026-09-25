@@ -1,0 +1,52 @@
+name: YouTube Analytics CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, master, develop ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.11", "3.12", "3.13"]
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ matrix.python-version }}
+        cache: 'pip'
+
+    - name: Install Dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install pytest pytest-cov flake8
+
+    - name: Lint Code with Flake8
+      run: |
+        # stop the build if there are Python syntax errors or undefined names
+        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics --exclude=.git,__pycache__,docs,venv
+        # exit-zero treats all errors as warnings
+        flake8 . --count --exit-zero --max-complexity=15 --max-line-length=120 --statistics --exclude=.git,__pycache__,docs,venv
+
+    - name: Seed Database and Run Automated Test Suite
+      run: |
+        python cli.py seed
+        python -m pytest tests/ -v --junitxml=test-results.xml
+
+    - name: Verify CLI Commands and Report Compilers
+      run: |
+        python cli.py sweep
+        python cli.py status
+        python cli.py report --type brutal
+        python cli.py report --type standard
+
+    - name: Check Artifact Generation
+      run: |
+        ls -la reports_generated/

@@ -1,0 +1,48 @@
+version: '3.8'
+
+services:
+  fastapi-dashboard:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    container_name: youtube_analytics_fastapi
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=sqlite:////app/youtube_growth.db
+      - API_PORT=8000
+      - YOUTUBE_DATA_TTL_DAYS=30
+      - STRICT_COMPLIANCE_MODE=True
+      - ENVIRONMENT=production
+    volumes:
+      - db-data:/app/data
+      - reports-data:/app/reports_generated
+    command: ["uvicorn", "backend.app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  streamlit-studio:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    container_name: youtube_analytics_streamlit
+    ports:
+      - "8501:8501"
+    environment:
+      - DATABASE_URL=sqlite:////app/youtube_growth.db
+      - STREAMLIT_PORT=8501
+    volumes:
+      - db-data:/app/data
+      - reports-data:/app/reports_generated
+    command: ["streamlit", "run", "streamlit_app.py", "--server.port=8501", "--server.address=0.0.0.0"]
+    restart: unless-stopped
+    depends_on:
+      - fastapi-dashboard
+
+volumes:
+  db-data:
+  reports-data:

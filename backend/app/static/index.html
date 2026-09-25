@@ -1,0 +1,1983 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube Growth Intelligence Platform | Neural Studio</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        cyber: {
+                            50: '#f0f9ff',
+                            400: '#38bdf8',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                        },
+                        darkbg: '#07090e',
+                        darksurface: '#0d121f',
+                        darkcard: '#0f172a',
+                        darkborder: 'rgba(255, 255, 255, 0.08)'
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="styles.css?v=2.0.0">
+</head>
+<body class="bg-darkbg text-slate-100 font-sans antialiased min-h-screen flex flex-col selection:bg-cyan-500/30 selection:text-cyan-200">
+
+    <!-- Top Futuristic HUD Header -->
+    <header class="border-b border-darkborder bg-darksurface/80 backdrop-blur-xl sticky top-0 z-40 px-6 py-3 flex items-center justify-between transition-colors duration-300">
+        <div class="flex items-center space-x-4">
+            <!-- Glowing Brand Mark -->
+            <div class="relative group cursor-pointer" onclick="switchTab('dashboard')">
+                <div class="absolute -inset-1 rounded-2xl bg-gradient-to-r from-red-600 via-rose-500 to-indigo-600 opacity-60 blur-sm group-hover:opacity-100 transition duration-300"></div>
+                <div class="relative w-10 h-10 rounded-xl bg-darkcard flex items-center justify-center text-white border border-white/10 shadow-lg">
+                    <i data-lucide="play" class="w-5 h-5 fill-red-500 text-red-500"></i>
+                </div>
+            </div>
+
+            <div>
+                <div class="flex items-center space-x-2.5">
+                    <span class="font-black text-base tracking-tight text-white flex items-center gap-1.5">
+                        <span>YouTube Growth Intelligence</span>
+                        <span class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">Neural</span>
+                    </span>
+                    <span class="cyber-badge cyber-badge-blue text-[10px]">v2.0 Neural Engine</span>
+                </div>
+                <div class="text-xs text-slate-400 flex items-center space-x-2 mt-0.5">
+                    <span class="flex items-center gap-1">
+                        <i data-lucide="tv" class="w-3 h-3 text-slate-500"></i>
+                        Channel: <strong class="text-slate-200 hover:text-cyan-400 cursor-pointer transition" id="top-channel-name">DevPulse Systems</strong>
+                    </span>
+                    <span class="inline-block w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-[0_0_8px_#34d399]"></span>
+                    <span class="text-emerald-400 text-[11px] font-medium" id="top-status-indicator">Telemetry Active</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Center: Interactive Quick Search / Command Palette Trigger -->
+        <div class="hidden lg:flex items-center">
+            <button onclick="openCommandPalette()" class="flex items-center space-x-3 px-4 py-1.5 rounded-xl bg-slate-900/80 hover:bg-slate-800 border border-white/10 hover:border-cyan-500/40 text-slate-400 hover:text-slate-200 text-xs transition duration-200 shadow-inner group">
+                <i data-lucide="search" class="w-3.5 h-3.5 text-cyan-400 group-hover:scale-110 transition"></i>
+                <span>Search videos, metrics, actions...</span>
+                <kbd class="px-1.5 py-0.5 rounded bg-slate-800 border border-slate-700 text-[10px] font-mono text-slate-300">Ctrl K</kbd>
+            </button>
+        </div>
+
+        <!-- Right Action Items -->
+        <div class="flex items-center space-x-3.5">
+            <!-- 30-Day Policy Compliance HUD Badge -->
+            <div class="hidden md:flex items-center space-x-2 px-3 py-1.5 rounded-xl bg-slate-900/60 border border-emerald-500/30 text-xs shadow-sm hover:border-emerald-500/50 transition cursor-pointer" onclick="switchTab('data-sources')">
+                <div class="relative flex h-2 w-2">
+                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                    <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                </div>
+                <span class="text-slate-300 text-[11px]">TTL Purge: <strong class="text-emerald-400" id="top-ttl-days">30d remaining</strong></span>
+            </div>
+
+            <!-- Plain English / ELI5 Mode Switch -->
+            <button onclick="toggleEli5Mode()" id="eli5-mode-btn" class="px-3 py-1.5 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 border border-amber-500/30 text-xs font-bold flex items-center space-x-1.5 transition shadow">
+                <span>👶</span>
+                <span id="eli5-btn-label">Plain English (ELI5)</span>
+            </button>
+
+            <!-- Quick Resync -->
+            <button onclick="triggerReseed()" title="Resynchronize Warehouse Telemetry" class="p-2 rounded-xl bg-slate-900/80 hover:bg-slate-800 text-slate-300 hover:text-cyan-400 border border-white/10 hover:border-cyan-500/30 transition shadow">
+                <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+            </button>
+
+            <!-- Quick Export PDF -->
+            <button onclick="downloadReport('pdf')" title="Export Executive PDF Dossier" class="px-3 py-1.5 rounded-xl bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 text-white text-xs font-bold flex items-center space-x-1.5 shadow-[0_0_15px_-3px_rgba(6,182,212,0.4)] transition">
+                <i data-lucide="file-down" class="w-3.5 h-3.5"></i>
+                <span class="hidden sm:inline">Export Dossier</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Workspace Layout -->
+    <div class="flex flex-1 overflow-hidden">
+        
+        <!-- Sidebar Navigation -->
+        <aside class="w-64 border-r border-darkborder bg-darksurface/90 backdrop-blur-lg flex flex-col justify-between shrink-0 select-none z-20">
+            <nav class="p-3.5 space-y-1 overflow-y-auto">
+                <div class="text-[10px] font-extrabold text-slate-500 uppercase tracking-wider px-3 mb-2 flex items-center justify-between">
+                    <span>Intelligence Hub</span>
+                    <i data-lucide="sparkles" class="w-3 h-3 text-cyan-400"></i>
+                </div>
+                
+                <button onclick="switchTab('dashboard')" class="nav-btn active" id="nav-dashboard">
+                    <i data-lucide="layout-dashboard" class="w-4 h-4 text-cyan-400"></i>
+                    <span>Executive HUD</span>
+                </button>
+                <button onclick="switchTab('videos')" class="nav-btn" id="nav-videos">
+                    <i data-lucide="video" class="w-4 h-4 text-blue-400"></i>
+                    <span>Videos & Scorecards</span>
+                </button>
+                <button onclick="switchTab('retention')" class="nav-btn" id="nav-retention">
+                    <i data-lucide="activity" class="w-4 h-4 text-rose-400"></i>
+                    <span>Audience Retention Radar</span>
+                </button>
+                <button onclick="switchTab('traffic')" class="nav-btn" id="nav-traffic">
+                    <i data-lucide="compass" class="w-4 h-4 text-emerald-400"></i>
+                    <span>Traffic Growth Quadrants</span>
+                </button>
+                <button onclick="switchTab('audience')" class="nav-btn" id="nav-audience">
+                    <i data-lucide="users" class="w-4 h-4 text-purple-400"></i>
+                    <span>Demographics & Cohorts</span>
+                </button>
+                <button onclick="switchTab('content-intelligence')" class="nav-btn" id="nav-content-intelligence">
+                    <i data-lucide="layers" class="w-4 h-4 text-amber-400"></i>
+                    <span>NLP Content Clusters</span>
+                </button>
+
+                <div class="pt-4 text-[10px] font-extrabold text-slate-500 uppercase tracking-wider px-3 mb-2 flex items-center justify-between">
+                    <span>Forecasting & Strategy</span>
+                    <i data-lucide="cpu" class="w-3 h-3 text-indigo-400"></i>
+                </div>
+                
+                <button onclick="switchTab('predictions')" class="nav-btn" id="nav-predictions">
+                    <i data-lucide="bot" class="w-4 h-4 text-cyan-400"></i>
+                    <span>Pre-Publish Neural Simulator</span>
+                </button>
+                <button onclick="switchTab('scenario')" class="nav-btn" id="nav-scenario">
+                    <i data-lucide="trending-up" class="w-4 h-4 text-emerald-400"></i>
+                    <span>Compounding Growth Planner</span>
+                </button>
+                <button onclick="switchTab('growth')" class="nav-btn" id="nav-growth">
+                    <i data-lucide="target" class="w-4 h-4 text-indigo-400"></i>
+                    <span>Opportunity Matrix</span>
+                </button>
+                <button onclick="switchTab('recommendations')" class="nav-btn" id="nav-recommendations">
+                    <i data-lucide="lightbulb" class="w-4 h-4 text-amber-400"></i>
+                    <span>Evidence-Grounded Recs</span>
+                </button>
+                <button onclick="switchTab('reports')" class="nav-btn" id="nav-reports">
+                    <i data-lucide="file-text" class="w-4 h-4 text-rose-400"></i>
+                    <span>Executive Report Center</span>
+                </button>
+
+                <div class="pt-4 text-[10px] font-extrabold text-slate-500 uppercase tracking-wider px-3 mb-2 flex items-center justify-between">
+                    <span>Governance & ML</span>
+                    <i data-lucide="shield" class="w-3 h-3 text-slate-400"></i>
+                </div>
+
+                <button onclick="switchTab('data-sources')" class="nav-btn" id="nav-data-sources">
+                    <i data-lucide="database" class="w-4 h-4 text-slate-400"></i>
+                    <span>Compliance & 30d TTL</span>
+                </button>
+                <button onclick="switchTab('model-center')" class="nav-btn" id="nav-model-center">
+                    <i data-lucide="binary" class="w-4 h-4 text-slate-400"></i>
+                    <span>ML Zero-Leakage Center</span>
+                </button>
+                <button onclick="switchTab('benchmark')" class="nav-btn" id="nav-benchmark">
+                    <i data-lucide="scale" class="w-4 h-4 text-purple-400"></i>
+                    <span>Ecosystem Teardown & Comps</span>
+                </button>
+
+                <div class="pt-4 text-[10px] font-extrabold text-amber-400 uppercase tracking-wider px-3 mb-2 flex items-center justify-between">
+                    <span>Creator Academy (ELI5)</span>
+                    <i data-lucide="book-open" class="w-3 h-3 text-amber-400"></i>
+                </div>
+                <button onclick="switchTab('layman')" class="nav-btn" id="nav-layman">
+                    <i data-lucide="sparkles" class="w-4 h-4 text-amber-400"></i>
+                    <span>Layman Growth Academy</span>
+                </button>
+            </nav>
+
+            <!-- Bottom Brutal Analysis Mode Cyber Toggle -->
+            <div class="p-3.5 border-t border-darkborder bg-gradient-to-b from-darkcard/40 to-darkcard/90">
+                <div class="p-3 rounded-xl bg-slate-900/80 border border-rose-500/20 shadow-inner flex items-center justify-between">
+                    <div class="flex items-center space-x-2.5">
+                        <div class="w-7 h-7 rounded-lg bg-rose-500/10 border border-rose-500/30 flex items-center justify-center text-rose-400">
+                            <i data-lucide="zap" class="w-4 h-4"></i>
+                        </div>
+                        <div>
+                            <div class="text-xs font-bold text-slate-200">Brutal Mode</div>
+                            <div class="text-[10px] text-slate-500">Unfiltered critique</div>
+                        </div>
+                    </div>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" id="brutal-mode-toggle" class="sr-only peer" onchange="toggleBrutalMode()">
+                        <div class="w-9 h-5 bg-slate-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-slate-400 peer-checked:after:bg-white after:border-slate-500 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-gradient-to-r peer-checked:from-rose-600 peer-checked:to-red-500 shadow-sm"></div>
+                    </label>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="flex-1 overflow-y-auto p-6 space-y-6">
+
+            <!-- Brutal Alert Banner (Hidden by default, shown when Brutal Mode is ON) -->
+            <div id="brutal-alert-banner" class="hidden p-4 rounded-2xl bg-gradient-to-r from-rose-950/40 via-red-950/20 to-slate-900 border border-rose-500/40 shadow-lg shadow-rose-950/30 flex items-center justify-between">
+                <div class="flex items-center space-x-3.5">
+                    <div class="w-9 h-9 rounded-xl bg-rose-600/20 border border-rose-500/50 flex items-center justify-center text-rose-400">
+                        <i data-lucide="alert-triangle" class="w-5 h-5"></i>
+                    </div>
+                    <div>
+                        <div class="text-xs font-black uppercase tracking-wider text-rose-400 flex items-center gap-2">
+                            <span>Brutal Diagnostic Mode Active</span>
+                            <span class="inline-block w-2 h-2 rounded-full bg-rose-500 animate-ping"></span>
+                        </div>
+                        <div class="text-xs text-slate-300 mt-0.5">Polite vanity filtering deactivated. Revealing the 3 critical algorithmic leaks throttling your channel's ceiling.</div>
+                    </div>
+                </div>
+                <button onclick="toggleBrutalMode()" class="px-3 py-1.5 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-300 text-xs font-bold border border-rose-500/30 transition">
+                    Disable Brutal Mode
+                </button>
+            </div>
+
+            <!-- TAB 1: EXECUTIVE DASHBOARD -->
+            <section id="tab-dashboard" class="space-y-6">
+                <!-- Channel Velocity Diagnostic Banner -->
+                <div class="glass-card p-5 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-96 h-96 bg-gradient-to-bl from-cyan-500/10 via-indigo-500/5 to-transparent rounded-full pointer-events-none blur-3xl"></div>
+                    
+                    <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6 relative z-10">
+                        <div class="space-y-1.5 max-w-2xl">
+                            <div class="flex items-center gap-2">
+                                <span class="cyber-badge cyber-badge-emerald">Neural Channel Health</span>
+                                <span class="text-xs text-slate-400">Last 90-Day Cohort Synchronization</span>
+                            </div>
+                            <h2 class="text-2xl font-black tracking-tight text-white flex items-center gap-2">
+                                <span>High-Velocity Compounding Engine</span>
+                            </h2>
+                            <p class="text-xs text-slate-300 leading-relaxed">
+                                Flagship deep dives (>15 mins) drive <strong class="text-cyan-400">76.4%</strong> of channel watch hours. Hook retention stands at <strong class="text-emerald-400">71.6%</strong>, outperforming category baselines by +14.2%.
+                            </p>
+                        </div>
+
+                        <!-- Channel Growth Score Gauge -->
+                        <div class="flex items-center space-x-4 bg-slate-900/70 border border-white/10 rounded-2xl p-4 shrink-0 shadow-inner">
+                            <div class="hud-gauge w-16 h-16">
+                                <svg class="w-16 h-16">
+                                    <circle class="hud-gauge-circle-bg" stroke-width="5" r="26" cx="32" cy="32"></circle>
+                                    <circle class="hud-gauge-circle-val stroke-cyan-400" stroke-width="5" stroke-dasharray="163.36" stroke-dashoffset="25" r="26" cx="32" cy="32"></circle>
+                                </svg>
+                                <span class="absolute text-sm font-black text-white">84.5</span>
+                            </div>
+                            <div>
+                                <div class="text-xs font-black text-white">Channel Growth Index (CGI)</div>
+                                <div class="text-[11px] text-emerald-400 mt-0.5 flex items-center gap-1">
+                                    <i data-lucide="trending-up" class="w-3 h-3"></i>
+                                    <span>Top 10% Technical Vertical</span>
+                                </div>
+                                <div class="text-[10px] text-slate-500 mt-1">Multi-Pillar Composite (0-100)</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- KPI Metric Cards Grid -->
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4" id="kpi-cards-grid">
+                    <!-- Populated dynamically by app.js -->
+                </div>
+
+                <!-- Layman's Beginner Translation Card -->
+                <div class="layman-card space-y-4 shadow-sm" id="dashboard-layman-box">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-amber-500/20 pb-3">
+                        <div class="flex items-center space-x-3">
+                            <span class="text-2xl p-2 bg-amber-500/10 rounded-xl border border-amber-500/30">👶</span>
+                            <div>
+                                <h3 class="text-sm font-bold text-amber-300 flex items-center gap-2">
+                                    <span>Layman's Quick Translation: What These Numbers Mean For You</span>
+                                    <span class="layman-pill">Zero Jargon</span>
+                                </h3>
+                                <p class="text-[11px] text-slate-400">If you have zero data science background, here is how your channel works using simple everyday analogies:</p>
+                            </div>
+                        </div>
+                        <button onclick="switchTab('layman')" class="px-3 py-1.5 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 text-xs font-bold border border-amber-500/30 flex items-center space-x-1.5 transition shrink-0">
+                            <span>Open Full Creator Academy</span>
+                            <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+                        </button>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
+                        <div class="p-3.5 bg-slate-900/70 rounded-xl border border-amber-500/15 space-y-1.5">
+                            <div class="flex items-center justify-between">
+                                <span class="font-bold text-slate-200">1. Total Views</span>
+                                <span class="analogy-box text-[10px] py-0.5 px-2">Store Footsteps</span>
+                            </div>
+                            <p class="text-[11px] text-slate-400">Like people walking into your retail shop. Having views is great, but only if they stay to buy something.</p>
+                            <div class="action-box text-[10px] py-1 px-2">
+                                <strong>Golden Rule:</strong> Views fill the bucket; retention keeps it full.
+                            </div>
+                        </div>
+
+                        <div class="p-3.5 bg-slate-900/70 rounded-xl border border-amber-500/15 space-y-1.5">
+                            <div class="flex items-center justify-between">
+                                <span class="font-bold text-slate-200">2. Watch Time</span>
+                                <span class="analogy-box text-[10px] py-0.5 px-2">Time in Aisle</span>
+                            </div>
+                            <p class="text-[11px] text-slate-400">YouTube's #1 favorite currency. The longer you keep people glued to YouTube, the more YouTube promotes you.</p>
+                            <div class="action-box text-[10px] py-1 px-2">
+                                <strong>Golden Rule:</strong> 76% of your watch hours come from videos over 15 minutes!
+                            </div>
+                        </div>
+
+                        <div class="p-3.5 bg-slate-900/70 rounded-xl border border-amber-500/15 space-y-1.5">
+                            <div class="flex items-center justify-between">
+                                <span class="font-bold text-slate-200">3. Retention %</span>
+                                <span class="analogy-box text-[10px] py-0.5 px-2">Popcorn Test</span>
+                            </div>
+                            <p class="text-[11px] text-slate-400">Did they watch to the ending or walk out of the movie theater at minute 2? 48% retention means half your crowd stays.</p>
+                            <div class="action-box text-[10px] py-1 px-2">
+                                <strong>Golden Rule:</strong> Aim for >50% average retention across all uploads.
+                            </div>
+                        </div>
+
+                        <div class="p-3.5 bg-slate-900/70 rounded-xl border border-amber-500/15 space-y-1.5">
+                            <div class="flex items-center justify-between">
+                                <span class="font-bold text-slate-200">4. Subscribers</span>
+                                <span class="analogy-box text-[10px] py-0.5 px-2">VIP Members</span>
+                            </div>
+                            <p class="text-[11px] text-slate-400">People who signed up for your loyalty club. 5.5 per 1,000 views is solid, meaning 1 in every 180 viewers hits subscribe.</p>
+                            <div class="action-box text-[10px] py-1 px-2">
+                                <strong>Golden Rule:</strong> Give a clear reason to subscribe at minute 4, not minute 20!
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Main Charts: Views & Watch Time Velocity + Growth Tier Distribution -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div class="lg:col-span-2 glass-card p-5">
+                        <div class="flex items-center justify-between mb-4">
+                            <div>
+                                <h3 class="font-bold text-sm text-slate-100 flex items-center gap-2">
+                                    <span>Views vs Watch Time Accumulation</span>
+                                    <span class="cyber-badge cyber-badge-blue text-[9px]">Top Flagships</span>
+                                </h3>
+                                <p class="text-xs text-slate-400">Comparing view volume against algorithmic watch hour generation</p>
+                            </div>
+                            <span class="text-xs font-semibold px-2.5 py-1 rounded-lg bg-slate-800 text-slate-300 border border-slate-700">Top 10 Uploads</span>
+                        </div>
+                        <div class="h-72">
+                            <canvas id="chart-dashboard-views"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="glass-card p-5">
+                        <div class="flex items-center justify-between mb-4">
+                            <div>
+                                <h3 class="font-bold text-sm text-slate-100">Performance Tiers</h3>
+                                <p class="text-xs text-slate-400">Power-law robust Z-score distribution</p>
+                            </div>
+                        </div>
+                        <div class="h-72 flex items-center justify-center">
+                            <canvas id="chart-dashboard-tiers"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Publishing Cohorts: Day of Week & Duration Buckets -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="glass-card p-5">
+                        <div class="flex items-center justify-between mb-2">
+                            <h3 class="font-bold text-sm text-slate-100">Publishing Day Velocity Cohort</h3>
+                            <span class="text-[10px] font-bold text-cyan-400">Median View Benchmark</span>
+                        </div>
+                        <p class="text-xs text-slate-400 mb-3">Median views generated by initial video publish day</p>
+                        <div class="h-56">
+                            <canvas id="chart-cohort-day"></canvas>
+                        </div>
+                    </div>
+                    <div class="glass-card p-5">
+                        <div class="flex items-center justify-between mb-2">
+                            <h3 class="font-bold text-sm text-slate-100">Duration Bucket vs Audience Retention</h3>
+                            <span class="text-[10px] font-bold text-emerald-400">Completion %</span>
+                        </div>
+                        <p class="text-xs text-slate-400 mb-3">Average view percentage retained across duration archetypes</p>
+                        <div class="h-56">
+                            <canvas id="chart-cohort-duration"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 2: VIDEOS & SCORECARDS -->
+            <section id="tab-videos" class="space-y-6 hidden">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div>
+                        <h1 class="text-2xl font-black tracking-tight text-white">Video Performance Scorecard</h1>
+                        <p class="text-xs text-slate-400 mt-1">Granular metrics with power-law robust Z-scores, retention R^2, and subscriber conversion per 1,000 views.</p>
+                    </div>
+
+                    <!-- Instant Search & Filters Bar -->
+                    <div class="flex flex-wrap items-center gap-3 text-xs">
+                        <div class="relative">
+                            <i data-lucide="search" class="w-3.5 h-3.5 text-slate-400 absolute left-3 top-2.5"></i>
+                            <input type="text" id="video-search-input" oninput="filterVideosLive()" placeholder="Filter by title..." class="bg-darkcard border border-darkborder rounded-xl pl-9 pr-3 py-1.5 text-xs text-slate-100 focus:outline-none focus:border-cyan-500 w-44 sm:w-56 transition">
+                        </div>
+
+                        <select id="filter-video-format" onchange="loadVideosTable()" class="bg-darkcard border border-darkborder rounded-xl px-3 py-1.5 text-slate-200 focus:border-cyan-500">
+                            <option value="ALL">All Formats</option>
+                            <option value="Deep Dive">Deep Dive (>15m)</option>
+                            <option value="Mid-form">Mid-form (1-15m)</option>
+                            <option value="Short">Shorts (&lt;60s)</option>
+                        </select>
+
+                        <select id="filter-video-tier" onchange="loadVideosTable()" class="bg-darkcard border border-darkborder rounded-xl px-3 py-1.5 text-slate-200 focus:border-cyan-500">
+                            <option value="ALL">All Tiers</option>
+                            <option value="Viral Breakout">Viral Breakout (Z ≥ +1.5)</option>
+                            <option value="Above Average">Above Average</option>
+                            <option value="Average">Average</option>
+                            <option value="Underperforming">Underperforming</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Video Table View -->
+                <div class="glass-card overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs" id="videos-table">
+                            <thead class="bg-slate-900/80 border-b border-darkborder text-slate-400 uppercase font-semibold">
+                                <tr>
+                                    <th class="py-3 px-4">Title</th>
+                                    <th class="py-3 px-3">Format</th>
+                                    <th class="py-3 px-3">Views</th>
+                                    <th class="py-3 px-3">Watch Time</th>
+                                    <th class="py-3 px-3">Avg Retention</th>
+                                    <th class="py-3 px-3">0-30s Hook Drop</th>
+                                    <th class="py-3 px-3">Robust Z</th>
+                                    <th class="py-3 px-3">Subs / 1k</th>
+                                    <th class="py-3 px-3">Tier</th>
+                                    <th class="py-3 px-3 text-right">Drilldown</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-darkborder text-slate-200" id="videos-table-body">
+                                <!-- Populated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 3: AUDIENCE RETENTION RADAR -->
+            <section id="tab-retention" class="space-y-6 hidden">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div>
+                        <h1 class="text-2xl font-black tracking-tight text-white flex items-center gap-2">
+                            <span>Audience Retention & Hook Dynamics</span>
+                            <span class="cyber-badge cyber-badge-rose text-[9px]">Exponential Fit</span>
+                        </h1>
+                        <p class="text-xs text-slate-400 mt-1">Non-linear least squares fit R(t) = R₀·e⁻ᵝᵗ + C with R² goodness-of-fit gating and second-by-second scrub analysis.</p>
+                    </div>
+                    <div class="flex items-center space-x-2 text-xs">
+                        <span class="text-slate-400">Select Video:</span>
+                        <select id="retention-video-selector" onchange="loadRetentionDetail(this.value)" class="bg-darkcard border border-darkborder rounded-xl px-3 py-1.5 text-slate-200 max-w-xs focus:border-cyan-500">
+                            <!-- Populated dynamically -->
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Retention Diagnostic Badges -->
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4" id="retention-diagnostic-cards">
+                    <!-- Populated dynamically -->
+                </div>
+
+                <!-- Interactive Timeline Scrubbing Bar Preview -->
+                <div class="glass-card p-4 space-y-2">
+                    <div class="flex items-center justify-between text-xs">
+                        <span class="font-bold text-slate-200 flex items-center gap-1.5">
+                            <i data-lucide="play-circle" class="w-4 h-4 text-cyan-400"></i>
+                            <span>Interactive Video Retention Timeline Radar</span>
+                        </span>
+                        <span class="text-[11px] text-cyan-400 font-mono" id="scrub-timestamp-label">Hover along timeline to inspect moments</span>
+                    </div>
+
+                    <div class="retention-scrub-bar" id="timeline-scrub-track" onmousemove="handleTimelineScrub(event)" onmouseleave="resetTimelineScrub()">
+                        <div class="absolute inset-0 flex">
+                            <!-- 0-30s Hook Zone -->
+                            <div class="h-full retention-phase-hook border-r border-red-500/40 relative group" style="width: 15%;" title="Opening 0-30s Hook Phase">
+                                <span class="absolute bottom-1 left-2 text-[9px] font-bold text-red-400 uppercase">Hook Zone</span>
+                            </div>
+                            <!-- Pacing Body -->
+                            <div class="h-full retention-phase-body flex-1 relative group" title="Pacing & Explanation Body">
+                                <span class="absolute bottom-1 left-3 text-[9px] font-bold text-cyan-400 uppercase">Content Body (Exponential Decay)</span>
+                            </div>
+                            <!-- Outro / End-Screen -->
+                            <div class="h-full retention-phase-outro border-l border-emerald-500/40" style="width: 12%;" title="End Screen CTA Zone">
+                                <span class="absolute bottom-1 right-2 text-[9px] font-bold text-emerald-400 uppercase">Outro CTA</span>
+                            </div>
+                        </div>
+                        <div class="retention-scrub-indicator" id="timeline-scrub-needle" style="left: 0%;"></div>
+                    </div>
+
+                    <div class="flex items-center justify-between text-[11px] text-slate-400 pt-1">
+                        <span>0:00 (Hook Launch)</span>
+                        <span id="scrub-diagnostic-pill" class="text-slate-300 font-medium">Scrub needle over video timeline to view instantaneous drop-offs</span>
+                        <span>End of Video</span>
+                    </div>
+                </div>
+
+                <!-- Interactive Retention Curve Canvas -->
+                <div class="glass-card p-6">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-2 mb-4">
+                        <div>
+                            <h3 class="font-bold text-sm text-slate-100 flex items-center space-x-2">
+                                <span id="retention-curve-title">Audience Retention Curve</span>
+                                <span id="retention-r2-badge" class="cyber-badge cyber-badge-emerald text-xs">R² = 0.94</span>
+                            </h3>
+                            <p class="text-xs text-slate-400 mt-0.5" id="retention-fit-explanation">Observed retention vs fitted exponential decay curve</p>
+                        </div>
+                        <div class="flex items-center space-x-4 text-xs">
+                            <div class="flex items-center space-x-1.5">
+                                <span class="w-3 h-3 rounded-full bg-blue-500 inline-block"></span>
+                                <span class="text-slate-300">Observed Retention</span>
+                            </div>
+                            <div class="flex items-center space-x-1.5">
+                                <span class="w-3 h-1 bg-rose-400 inline-block"></span>
+                                <span class="text-slate-300">Decay Model Fit</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="h-80">
+                        <canvas id="chart-retention-curve"></canvas>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 4: TRAFFIC EFFICIENCY QUADRANTS -->
+            <section id="tab-traffic" class="space-y-6 hidden">
+                <div>
+                    <h1 class="text-2xl font-black tracking-tight text-white">Traffic Source Efficiency Quadrants</h1>
+                    <p class="text-xs text-slate-400 mt-1">Classifies discovery channels by volume share vs watch-time efficiency to pinpoint highest ROI growth vectors.</p>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div class="lg:col-span-2 glass-card p-5">
+                        <h3 class="font-bold text-sm text-slate-100 mb-1">Traffic Channels View Share vs Watch Share</h3>
+                        <p class="text-xs text-slate-400 mb-4">Channels with watch share &gt; view share yield higher algorithmic retention</p>
+                        <div class="h-72">
+                            <canvas id="chart-traffic-bars"></canvas>
+                        </div>
+                    </div>
+                    <div class="glass-card p-5">
+                        <h3 class="font-bold text-sm text-slate-100 mb-1">Traffic Source Breakdown</h3>
+                        <p class="text-xs text-slate-400 mb-4">Total channel view distribution</p>
+                        <div class="h-72 flex items-center justify-center">
+                            <canvas id="chart-traffic-doughnut"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quadrant Cards Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4" id="traffic-quadrant-cards">
+                    <!-- Populated dynamically -->
+                </div>
+            </section>
+
+            <!-- TAB 5: AUDIENCE & DEMOGRAPHICS -->
+            <section id="tab-audience" class="space-y-6 hidden">
+                <div>
+                    <h1 class="text-2xl font-black tracking-tight text-white">Audience Demographics & Geography</h1>
+                    <p class="text-xs text-slate-400 mt-1">Group-normalized demographics with strict handling of YouTube's low-volume privacy suppression thresholds.</p>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div class="glass-card p-5">
+                        <h3 class="font-bold text-sm text-slate-100 mb-1">Age Bracket Distribution</h3>
+                        <p class="text-xs text-slate-400 mb-3">Group-normalized percentages (prevents 200% double-counting)</p>
+                        <div class="h-72">
+                            <canvas id="chart-demographics-age"></canvas>
+                        </div>
+                    </div>
+                    <div class="glass-card p-5">
+                        <h3 class="font-bold text-sm text-slate-100 mb-1">Top Geographic Viewership</h3>
+                        <p class="text-xs text-slate-400 mb-3">Audience distribution by playback country</p>
+                        <div class="h-72">
+                            <canvas id="chart-demographics-geo"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 6: CONTENT INTELLIGENCE & GROUPS -->
+            <section id="tab-content-intelligence" class="space-y-6 hidden">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div>
+                        <h1 class="text-2xl font-black tracking-tight text-white">Content Intelligence & Topic Clusters</h1>
+                        <p class="text-xs text-slate-400 mt-1">Topic pillar performance clustering with first-class promotion to YouTube Analytics Groups (up to 500 items).</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6" id="content-clusters-grid">
+                    <!-- Populated dynamically -->
+                </div>
+            </section>
+
+            <!-- TAB 7: PRE-PUBLISH NEURAL SIMULATOR -->
+            <section id="tab-predictions" class="space-y-6 hidden">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div>
+                        <h1 class="text-2xl font-black tracking-tight text-white flex items-center gap-2">
+                            <span>Pre-Publish Neural Simulator</span>
+                            <span class="cyber-badge cyber-badge-cyan text-[9px]">Zero-Leakage t₀</span>
+                        </h1>
+                        <p class="text-xs text-slate-400 mt-1">Evaluate title CTR strength, pacing length, upload day/hour, and projected 30-day views before rendering.</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- Input Form Panel -->
+                    <div class="glass-card p-5 space-y-4">
+                        <h3 class="font-bold text-sm text-slate-100 flex items-center gap-2">
+                            <i data-lucide="sliders" class="w-4 h-4 text-cyan-400"></i>
+                            <span>Draft Video Parameters</span>
+                        </h3>
+
+                        <!-- Draft Title with Live Impact Meter -->
+                        <div class="space-y-1.5">
+                            <div class="flex items-center justify-between text-xs">
+                                <label class="font-semibold text-slate-300">Draft Title</label>
+                                <span class="text-[11px] text-slate-400 font-mono" id="title-char-count">61 chars</span>
+                            </div>
+                            <input type="text" id="sim-title" oninput="analyzeDraftTitleLive()" value="Building a Real-Time Distributed Cache from Scratch in Go" class="w-full bg-slate-900/90 border border-darkborder rounded-xl px-3 py-2 text-xs text-slate-100 focus:outline-none focus:border-cyan-500 transition">
+                            
+                            <!-- Live Title Power Meter -->
+                            <div class="pt-1 space-y-1">
+                                <div class="flex items-center justify-between text-[10px]">
+                                    <span class="text-slate-400">Title CTR Potential</span>
+                                    <span class="text-cyan-400 font-bold" id="title-power-score">88 / 100 (Optimal)</span>
+                                </div>
+                                <div class="title-meter-bar">
+                                    <div class="title-meter-fill bg-gradient-to-r from-blue-500 to-cyan-400" id="title-meter-fill" style="width: 88%;"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 4 Instant AI Archetype Preset Buttons -->
+                        <div class="space-y-1">
+                            <div class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Apply AI Archetype Hook</div>
+                            <div class="grid grid-cols-2 gap-2 text-[10px]">
+                                <button type="button" onclick="applyTitleArchetype('curiosity')" class="px-2.5 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 border border-white/5 hover:border-cyan-500/30 text-slate-300 text-left transition truncate">
+                                    🔮 Curiosity Gap
+                                </button>
+                                <button type="button" onclick="applyTitleArchetype('numbers')" class="px-2.5 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 border border-white/5 hover:border-cyan-500/30 text-slate-300 text-left transition truncate">
+                                    📊 Case Study & Numbers
+                                </button>
+                                <button type="button" onclick="applyTitleArchetype('contrarian')" class="px-2.5 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 border border-white/5 hover:border-cyan-500/30 text-slate-300 text-left transition truncate">
+                                    ⚡ Contrarian Shift
+                                </button>
+                                <button type="button" onclick="applyTitleArchetype('masterclass')" class="px-2.5 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 border border-white/5 hover:border-cyan-500/30 text-slate-300 text-left transition truncate">
+                                    🎓 Complete Masterclass
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Duration Slider -->
+                        <div class="space-y-1.5">
+                            <div class="flex items-center justify-between text-xs">
+                                <label class="font-semibold text-slate-300">Target Duration</label>
+                                <span id="sim-duration-val" class="text-cyan-400 font-bold font-mono">18 mins (1080s)</span>
+                            </div>
+                            <input type="range" id="sim-duration" min="45" max="2400" step="15" value="1080" oninput="updateSimDuration(this.value)" class="w-full accent-cyan-500 cursor-pointer">
+                            <div class="flex justify-between text-[10px] text-slate-500 font-mono">
+                                <span>1m (Short)</span>
+                                <span>15m (Mid)</span>
+                                <span>40m (Deep)</span>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-3 text-xs">
+                            <div>
+                                <label class="block font-semibold text-slate-300 mb-1">Publish Day</label>
+                                <select id="sim-day" class="w-full bg-slate-900 border border-darkborder rounded-xl px-2.5 py-2 text-xs text-slate-100">
+                                    <option value="1">Tuesday</option>
+                                    <option value="2" selected>Wednesday</option>
+                                    <option value="3">Thursday</option>
+                                    <option value="4">Friday</option>
+                                    <option value="5">Saturday</option>
+                                    <option value="6">Sunday</option>
+                                    <option value="0">Monday</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block font-semibold text-slate-300 mb-1">Publish Hour</label>
+                                <select id="sim-hour" class="w-full bg-slate-900 border border-darkborder rounded-xl px-2.5 py-2 text-xs text-slate-100">
+                                    <option value="14" selected>2:00 PM</option>
+                                    <option value="16">4:00 PM</option>
+                                    <option value="18">6:00 PM</option>
+                                    <option value="10">10:00 AM</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <button onclick="runSimulation()" class="w-full py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 text-white font-bold text-xs flex items-center justify-center space-x-2 shadow-lg shadow-cyan-500/20 transition duration-200">
+                            <i data-lucide="sparkles" class="w-4 h-4"></i>
+                            <span>Simulate Performance Forecast</span>
+                        </button>
+                    </div>
+
+                    <!-- Simulator Output Display -->
+                    <div class="lg:col-span-2 glass-card p-5 space-y-5">
+                        <div class="flex items-center justify-between border-b border-darkborder pb-3">
+                            <div>
+                                <h3 class="font-bold text-sm text-slate-100">Neural Forecast Outcome</h3>
+                                <p class="text-xs text-slate-400">Strict temporal cutoff model trained on historical performance</p>
+                            </div>
+                            <span id="sim-tier-badge" class="cyber-badge cyber-badge-emerald text-xs">Viral Breakout Potential</span>
+                        </div>
+
+                        <!-- Prediction Metrics Cards -->
+                        <div class="grid grid-cols-3 gap-3">
+                            <div class="p-3.5 bg-slate-900/70 rounded-xl border border-darkborder">
+                                <div class="text-[11px] text-slate-400">Predicted 30d Views</div>
+                                <div class="text-2xl font-black text-white" id="sim-pred-views">42,800</div>
+                                <div class="text-[10px] text-slate-500 mt-0.5" id="sim-ci-range">80% CI: 33.4k - 54.8k</div>
+                            </div>
+                            <div class="p-3.5 bg-slate-900/70 rounded-xl border border-darkborder">
+                                <div class="text-[11px] text-slate-400">Predicted Watch Hours</div>
+                                <div class="text-2xl font-black text-cyan-400" id="sim-pred-watch">3,720 hrs</div>
+                                <div class="text-[10px] text-emerald-400 mt-0.5">+42% vs channel median</div>
+                            </div>
+                            <div class="p-3.5 bg-slate-900/70 rounded-xl border border-darkborder">
+                                <div class="text-[11px] text-slate-400">Estimated Retention</div>
+                                <div class="text-2xl font-black text-emerald-400" id="sim-pred-ret">52.0%</div>
+                                <div class="text-[10px] text-slate-400 mt-0.5">High completion profile</div>
+                            </div>
+                        </div>
+
+                        <!-- Mobile Screen Preview Mockup -->
+                        <div class="p-3.5 bg-slate-900/50 rounded-xl border border-darkborder space-y-2">
+                            <div class="flex items-center justify-between text-xs text-slate-400">
+                                <span class="font-bold text-slate-300 flex items-center gap-1.5">
+                                    <i data-lucide="smartphone" class="w-3.5 h-3.5 text-cyan-400"></i>
+                                    <span>Mobile Feed Truncation Check</span>
+                                </span>
+                                <span class="text-[10px] text-emerald-400" id="mobile-trunc-status">✓ Fits within 3 lines</span>
+                            </div>
+                            <div class="bg-black/60 p-3 rounded-lg border border-white/5 flex gap-3 items-start">
+                                <div class="w-24 h-14 rounded bg-slate-800 flex items-center justify-center shrink-0 border border-white/10 text-slate-500 text-[10px]">
+                                    16:9 Thumbnail
+                                </div>
+                                <div class="space-y-1 overflow-hidden">
+                                    <div class="text-xs font-semibold text-white line-clamp-2" id="mobile-preview-title">
+                                        Building a Real-Time Distributed Cache from Scratch in Go
+                                    </div>
+                                    <div class="text-[10px] text-slate-400">DevPulse Systems · 42K views · 2 hours ago</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Actionable Improvement Suggestions -->
+                        <div>
+                            <h4 class="text-xs font-bold text-slate-200 uppercase tracking-wider mb-2 flex items-center space-x-1.5">
+                                <i data-lucide="check-circle" class="w-3.5 h-3.5 text-cyan-400"></i>
+                                <span>Algorithmic Optimization Checklist</span>
+                            </h4>
+                            <ul class="space-y-2 text-xs" id="sim-improvements-list">
+                                <!-- Populated dynamically -->
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 8: 90-DAY COMPOUNDING SCENARIO PLANNER -->
+            <section id="tab-scenario" class="space-y-6 hidden">
+                <div>
+                    <h1 class="text-2xl font-black tracking-tight text-white flex items-center gap-2">
+                        <span>90-Day Compounding Growth Scenario Planner</span>
+                        <span class="cyber-badge cyber-badge-emerald text-[9px]">Interactive What-If</span>
+                    </h1>
+                    <p class="text-xs text-slate-400 mt-1">Simulate the compounding trajectory of shifting release frequency, hook retention lift, and content format mix.</p>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- Controls -->
+                    <div class="glass-card p-5 space-y-4">
+                        <h3 class="font-bold text-sm text-slate-100 flex items-center gap-2">
+                            <i data-lucide="sliders-horizontal" class="w-4 h-4 text-emerald-400"></i>
+                            <span>Scenario Levers</span>
+                        </h3>
+
+                        <div class="space-y-1.5">
+                            <div class="flex items-center justify-between text-xs">
+                                <label class="font-semibold text-slate-300">Upload Cadence</label>
+                                <span id="lever-cadence-val" class="text-emerald-400 font-bold font-mono">2 uploads / week</span>
+                            </div>
+                            <input type="range" id="lever-cadence" min="1" max="5" value="2" step="1" oninput="updateScenarioPlanner()" class="w-full accent-emerald-500 cursor-pointer">
+                        </div>
+
+                        <div class="space-y-1.5">
+                            <div class="flex items-center justify-between text-xs">
+                                <label class="font-semibold text-slate-300">Hook Retention Uplift</label>
+                                <span id="lever-hook-val" class="text-cyan-400 font-bold font-mono">+10% lift</span>
+                            </div>
+                            <input type="range" id="lever-hook" min="0" max="25" value="10" step="5" oninput="updateScenarioPlanner()" class="w-full accent-cyan-500 cursor-pointer">
+                        </div>
+
+                        <div class="space-y-1.5">
+                            <div class="flex items-center justify-between text-xs">
+                                <label class="font-semibold text-slate-300">Flagship Deep Dive Share</label>
+                                <span id="lever-deepdive-val" class="text-indigo-400 font-bold font-mono">60% of uploads</span>
+                            </div>
+                            <input type="range" id="lever-deepdive" min="10" max="90" value="60" step="10" oninput="updateScenarioPlanner()" class="w-full accent-indigo-500 cursor-pointer">
+                        </div>
+
+                        <div class="pt-2">
+                            <button onclick="updateScenarioPlanner()" class="w-full py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs transition border border-white/10">
+                                Recalculate 90-Day Compounding
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Projected Results & Chart -->
+                    <div class="lg:col-span-2 glass-card p-5 space-y-4">
+                        <div class="grid grid-cols-3 gap-3 text-center">
+                            <div class="p-3 bg-slate-900/60 rounded-xl border border-darkborder">
+                                <div class="text-[10px] text-slate-400 uppercase tracking-wider font-semibold">90-Day Views Lift</div>
+                                <div class="text-xl font-black text-cyan-400 mt-0.5" id="scenario-views-lift">+385,000</div>
+                                <div class="text-[10px] text-emerald-400">+32.7% compounding</div>
+                            </div>
+                            <div class="p-3 bg-slate-900/60 rounded-xl border border-darkborder">
+                                <div class="text-[10px] text-slate-400 uppercase tracking-wider font-semibold">90-Day Subs Gained</div>
+                                <div class="text-xl font-black text-emerald-400 mt-0.5" id="scenario-subs-lift">+2,640</div>
+                                <div class="text-[10px] text-slate-400">High intent viewers</div>
+                            </div>
+                            <div class="p-3 bg-slate-900/60 rounded-xl border border-darkborder">
+                                <div class="text-[10px] text-slate-400 uppercase tracking-wider font-semibold">Watch Time Yield</div>
+                                <div class="text-xl font-black text-indigo-400 mt-0.5" id="scenario-watch-lift">+44,800 hrs</div>
+                                <div class="text-[10px] text-slate-400">Algorithm authority</div>
+                            </div>
+                        </div>
+
+                        <div class="h-60">
+                            <canvas id="chart-scenario-projection"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 9: OPPORTUNITY MATRIX -->
+            <section id="tab-growth" class="space-y-6 hidden">
+                <div>
+                    <h1 class="text-2xl font-black tracking-tight text-white">Growth Opportunity Matrix</h1>
+                    <p class="text-xs text-slate-400 mt-1">Strategic recommendations classified across Impact vs Effort quadrants.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6" id="opportunity-matrix-container">
+                    <div class="glass-card border-emerald-500/30 p-5">
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="flex items-center space-x-2">
+                                <span class="w-3 h-3 rounded-full bg-emerald-500 shadow-[0_0_8px_#10b981]"></span>
+                                <h3 class="font-bold text-sm text-emerald-400">1. Quick Wins (High Impact, Low Effort)</h3>
+                            </div>
+                            <span class="cyber-badge cyber-badge-emerald text-[10px]">Immediate Action</span>
+                        </div>
+                        <div class="space-y-3" id="matrix-quick-wins"></div>
+                    </div>
+
+                    <div class="glass-card border-blue-500/30 p-5">
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="flex items-center space-x-2">
+                                <span class="w-3 h-3 rounded-full bg-blue-500 shadow-[0_0_8px_#3b82f6]"></span>
+                                <h3 class="font-bold text-sm text-blue-400">2. Strategic Flagships (High Impact, High Effort)</h3>
+                            </div>
+                            <span class="cyber-badge cyber-badge-blue text-[10px]">Scheduled Sprint</span>
+                        </div>
+                        <div class="space-y-3" id="matrix-strategic"></div>
+                    </div>
+
+                    <div class="glass-card border-amber-500/30 p-5">
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="flex items-center space-x-2">
+                                <span class="w-3 h-3 rounded-full bg-amber-500 shadow-[0_0_8px_#f59e0b]"></span>
+                                <h3 class="font-bold text-sm text-amber-400">3. Fill-ins (Low Impact, Low Effort)</h3>
+                            </div>
+                            <span class="cyber-badge cyber-badge-amber text-[10px]">Backlog Polish</span>
+                        </div>
+                        <div class="space-y-3" id="matrix-fillins"></div>
+                    </div>
+
+                    <div class="glass-card border-rose-500/30 p-5">
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="flex items-center space-x-2">
+                                <span class="w-3 h-3 rounded-full bg-rose-500 shadow-[0_0_8px_#f43f5e]"></span>
+                                <h3 class="font-bold text-sm text-rose-400">4. Deprioritize (Low Impact, High Effort)</h3>
+                            </div>
+                            <span class="cyber-badge cyber-badge-rose text-[10px]">Avoid / Discard</span>
+                        </div>
+                        <div class="space-y-3" id="matrix-deprioritize"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 10: RECOMMENDATIONS & EVIDENCE OBJECTS -->
+            <section id="tab-recommendations" class="space-y-6 hidden">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div>
+                        <h1 class="text-2xl font-black tracking-tight text-white flex items-center gap-2">
+                            <span>Strategic Growth Recommendations</span>
+                            <span class="cyber-badge cyber-badge-blue text-[9px]">Grounded Contract</span>
+                        </h1>
+                        <p class="text-xs text-slate-400 mt-1">Every recommendation adheres to a strict Evidence Object contract (metric, baseline, n, effect size, confidence).</p>
+                    </div>
+
+                    <!-- Category Filter Buttons -->
+                    <div class="flex flex-wrap items-center gap-2 text-xs">
+                        <button onclick="filterRecsCategory('ALL')" class="px-3 py-1 rounded-lg bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 font-semibold" id="rec-filter-ALL">All</button>
+                        <button onclick="filterRecsCategory('Content Strategy')" class="px-3 py-1 rounded-lg bg-slate-800 text-slate-400 hover:text-white transition" id="rec-filter-Content Strategy">Content Strategy</button>
+                        <button onclick="filterRecsCategory('Conversion')" class="px-3 py-1 rounded-lg bg-slate-800 text-slate-400 hover:text-white transition" id="rec-filter-Conversion">Conversion</button>
+                        <button onclick="filterRecsCategory('Traffic')" class="px-3 py-1 rounded-lg bg-slate-800 text-slate-400 hover:text-white transition" id="rec-filter-Traffic">Traffic</button>
+                    </div>
+                </div>
+
+                <div class="space-y-4" id="recommendations-container">
+                    <!-- Populated dynamically -->
+                </div>
+            </section>
+
+            <!-- TAB 11: EXECUTIVE REPORTS -->
+            <section id="tab-reports" class="space-y-6 hidden">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div>
+                        <h1 class="text-2xl font-black tracking-tight text-white">Executive Report Center</h1>
+                        <p class="text-xs text-slate-400 mt-1">Generate presentation-ready executive PDFs, standalone responsive HTML reports, and raw CSV exports.</p>
+                    </div>
+                    <div class="flex items-center space-x-3">
+                        <button onclick="downloadReport('pdf')" class="px-4 py-2 rounded-xl bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 text-white text-xs font-bold flex items-center space-x-2 shadow-lg transition">
+                            <i data-lucide="download" class="w-4 h-4"></i>
+                            <span>Download Executive PDF</span>
+                        </button>
+                        <button onclick="openHtmlReport()" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold flex items-center space-x-2 border border-slate-700 transition">
+                            <i data-lucide="external-link" class="w-4 h-4"></i>
+                            <span>View Standalone HTML</span>
+                        </button>
+                        <button onclick="downloadReport('csv')" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold flex items-center space-x-2 border border-slate-700 transition">
+                            <i data-lucide="table" class="w-4 h-4"></i>
+                            <span>Export CSV</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Live Report Dossier Preview -->
+                <div class="glass-card p-6 space-y-4">
+                    <div class="flex items-center justify-between border-b border-darkborder pb-4">
+                        <div class="flex items-center space-x-3">
+                            <i data-lucide="file-check" class="w-5 h-5 text-emerald-400"></i>
+                            <h3 class="font-bold text-sm text-slate-100" id="report-preview-title">Executive Channel Growth Report (Standard Mode)</h3>
+                        </div>
+                        <span class="cyber-badge cyber-badge-emerald text-xs">Ready for Board Review</span>
+                    </div>
+
+                    <div class="prose prose-invert max-w-none text-xs text-slate-300 space-y-3">
+                        <p><strong>Target Channel:</strong> DevPulse Systems | <strong>Analysis Period:</strong> Last 90 Days</p>
+                        <p>This report consolidates non-parametric cohort testing, non-linear audience retention decay fits, traffic source efficiency quadrants, and zero-leakage pre-publish predictive benchmarks.</p>
+                        <p><strong>Primary Recommended Actions:</strong></p>
+                        <ul class="list-disc pl-5 space-y-1 text-slate-300">
+                            <li>Prioritize Flagship Deep Dives (&gt;15 mins): Yields 3.5x higher watch time efficiency than short tutorials.</li>
+                            <li>Reform opening 30 seconds: Eliminates 28% of drop-off by removing intro fluff and validating thumbnail premises immediately.</li>
+                            <li>Balance search traffic with browse triggers: Repackage technical guides to capture Suggested Video impressions.</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 12: DATA SOURCES & 30-DAY COMPLIANCE -->
+            <section id="tab-data-sources" class="space-y-6 hidden">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div>
+                        <h1 class="text-2xl font-black tracking-tight text-white flex items-center gap-2">
+                            <span>Data Sources & 30-Day TTL Compliance</span>
+                            <span class="cyber-badge cyber-badge-emerald text-[9px]">Policy III.E.4</span>
+                        </h1>
+                        <p class="text-xs text-slate-400 mt-1">Audit ledger verifying compliance with the mandatory YouTube API 30-day raw data retention rule.</p>
+                    </div>
+                    <button onclick="triggerTtlSweep()" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold flex items-center space-x-2 border border-slate-700 transition">
+                        <i data-lucide="trash-2" class="w-4 h-4 text-rose-400"></i>
+                        <span>Run TTL Purge Sweeper</span>
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4" id="compliance-stats-grid">
+                    <!-- Populated dynamically -->
+                </div>
+
+                <div class="glass-card p-5">
+                    <h3 class="font-bold text-sm text-slate-100 mb-3">Compliance Sweeper Audit Trail</h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs">
+                            <thead class="bg-slate-900/60 border-b border-darkborder text-slate-400 uppercase font-semibold">
+                                <tr>
+                                    <th class="py-2.5 px-4">Timestamp</th>
+                                    <th class="py-2.5 px-3">Event</th>
+                                    <th class="py-2.5 px-3">Table Swept</th>
+                                    <th class="py-2.5 px-3">Records Purged</th>
+                                    <th class="py-2.5 px-3">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-darkborder text-slate-300" id="compliance-logs-body">
+                                <tr>
+                                    <td class="py-2.5 px-4 font-mono text-[11px]">2026-09-24 16:59 UTC</td>
+                                    <td class="py-2.5 px-3"><span class="cyber-badge cyber-badge-blue text-[10px]">TTL_SWEEP</span></td>
+                                    <td class="py-2.5 px-3">raw_video_metadata</td>
+                                    <td class="py-2.5 px-3 font-mono">0 (All &lt; 30d)</td>
+                                    <td class="py-2.5 px-3 text-emerald-400 font-bold">COMPLIANT</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 13: ML MODEL CENTER -->
+            <section id="tab-model-center" class="space-y-6 hidden">
+                <div>
+                    <h1 class="text-2xl font-black tracking-tight text-white">Machine Learning & Zero-Leakage Center</h1>
+                    <p class="text-xs text-slate-400 mt-1">Audit verification of t₀ temporal cutoff integrity, feature importance weights, and naive baseline comparison.</p>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div class="lg:col-span-2 glass-card p-5">
+                        <h3 class="font-bold text-sm text-slate-100 mb-1">Global Feature Attributions (t₀ Pre-Publish)</h3>
+                        <p class="text-xs text-slate-400 mb-4">Gradient Boosting feature importances strictly excluding post-publish signals</p>
+                        <div class="h-72">
+                            <canvas id="chart-model-features"></canvas>
+                        </div>
+                    </div>
+                    <div class="glass-card p-5 space-y-4">
+                        <h3 class="font-bold text-sm text-slate-100">Model Benchmark Scorecard</h3>
+                        <div class="space-y-3 text-xs" id="model-scorecard-list">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 14: ECOSYSTEM TEARDOWN & BENCHMARKS -->
+            <section id="tab-benchmark" class="space-y-6 hidden">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div>
+                        <h1 class="text-2xl font-black tracking-tight text-white flex items-center gap-2">
+                            <span>Ecosystem Benchmark & Competitive Teardown</span>
+                            <span class="cyber-badge cyber-badge-purple text-[9px]">Brutal Industry Audit</span>
+                        </h1>
+                        <p class="text-xs text-slate-400 mt-1">Exhaustive comparative analysis of existing YouTube analytics platforms, their fatal mathematical flaws, and how our platform counter-engineers them.</p>
+                    </div>
+                </div>
+
+                <!-- Live Enterprise Benchmark HUD Widgets -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                    <!-- Tubular Labs V30/ER30 Card -->
+                    <div class="glass-card p-5 space-y-3 border-cyan-500/30 relative overflow-hidden">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
+                                <i data-lucide="zap" class="w-4 h-4 text-cyan-400"></i>
+                                <span>Tubular Labs Velocity</span>
+                            </span>
+                            <span class="cyber-badge cyber-badge-cyan text-[9px]">30-Day Standard</span>
+                        </div>
+                        <div class="flex items-baseline space-x-3">
+                            <div class="text-2xl font-black text-white font-mono" id="benchmark-v30-views">--</div>
+                            <span class="text-xs text-slate-400">V30 Views</span>
+                        </div>
+                        <div class="flex items-center justify-between text-xs pt-1 border-t border-slate-800">
+                            <span class="text-slate-400">Standardized ER30:</span>
+                            <span class="font-mono font-bold text-cyan-400" id="benchmark-er30-rate">--%</span>
+                        </div>
+                        <p class="text-[10px] text-slate-500 leading-tight">Normalizes view momentum across 30 days, eliminating age bias between brand-new and multi-year library uploads.</p>
+                    </div>
+
+                    <!-- HypeAuditor AQS Card -->
+                    <div class="glass-card p-5 space-y-3 border-emerald-500/30 relative overflow-hidden">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
+                                <i data-lucide="shield-check" class="w-4 h-4 text-emerald-400"></i>
+                                <span>HypeAuditor AQS</span>
+                            </span>
+                            <span class="cyber-badge cyber-badge-emerald text-[9px]" id="benchmark-aqs-tier">Analyzing</span>
+                        </div>
+                        <div class="flex items-baseline space-x-3">
+                            <div class="text-2xl font-black text-white font-mono" id="benchmark-aqs-score">--</div>
+                            <span class="text-xs text-slate-400">/ 100 Index</span>
+                        </div>
+                        <div class="flex items-center justify-between text-xs pt-1 border-t border-slate-800">
+                            <span class="text-slate-400">Audience Authenticity:</span>
+                            <span class="font-mono font-bold text-emerald-400" id="benchmark-aqs-auth">--% Human</span>
+                        </div>
+                        <p class="text-[10px] text-slate-500 leading-tight">Audits organic comments-to-views and retention consistency to isolate bot traffic and passive ghost subscribers.</p>
+                    </div>
+
+                    <!-- NoxInfluencer Sponsorship Valuation Card -->
+                    <div class="glass-card p-5 space-y-3 border-purple-500/30 relative overflow-hidden">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
+                                <i data-lucide="dollar-sign" class="w-4 h-4 text-purple-400"></i>
+                                <span>Nox Commercial FMV</span>
+                            </span>
+                            <span class="cyber-badge cyber-badge-purple text-[9px]" id="benchmark-fmv-tier">Tech Tier</span>
+                        </div>
+                        <div class="flex items-baseline space-x-3">
+                            <div class="text-2xl font-black text-white font-mono" id="benchmark-fmv-val">--</div>
+                            <span class="text-xs text-slate-400">Est. 60s Integration</span>
+                        </div>
+                        <div class="flex items-center justify-between text-xs pt-1 border-t border-slate-800">
+                            <span class="text-slate-400">Effective Technical CPM:</span>
+                            <span class="font-mono font-bold text-purple-400" id="benchmark-cpm-rate">--</span>
+                        </div>
+                        <p class="text-[10px] text-slate-500 leading-tight">Fair Market Value (FMV) estimated via Tier-1 developer geographic concentration and technical watch completion.</p>
+                    </div>
+                </div>
+
+                <!-- 10-Point Technical Capability Matrix -->
+                <div class="glass-card overflow-hidden">
+                    <div class="p-4 border-b border-darkborder flex items-center justify-between">
+                        <h3 class="font-bold text-sm text-slate-100 flex items-center gap-2">
+                            <i data-lucide="table-2" class="w-4 h-4 text-cyan-400"></i>
+                            <span>Comprehensive Feature & Rigor Comparison Matrix</span>
+                        </h3>
+                        <span class="cyber-badge cyber-badge-blue text-[10px]">6 Platforms Audited</span>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs">
+                            <thead class="bg-slate-900/80 border-b border-darkborder text-slate-400 uppercase font-semibold">
+                                <tr>
+                                    <th class="py-3 px-4">Evaluation Dimension</th>
+                                    <th class="py-3 px-3 text-cyan-400 font-black">Our Platform</th>
+                                    <th class="py-3 px-3">YouTube Studio</th>
+                                    <th class="py-3 px-3">ViewStats (MrBeast)</th>
+                                    <th class="py-3 px-3">vidIQ</th>
+                                    <th class="py-3 px-3">TubeBuddy</th>
+                                    <th class="py-3 px-3">Social Blade</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-darkborder text-slate-300 font-mono text-[11px]">
+                                <tr class="hover:bg-slate-800/30">
+                                    <td class="py-3 px-4 font-sans font-medium text-slate-100">1. Virality Outlier Metric</td>
+                                    <td class="py-3 px-3 text-emerald-400 font-bold font-sans">✓ Robust IQR Z-Score</td>
+                                    <td class="py-3 px-3 text-slate-500">✗ None (Raw views)</td>
+                                    <td class="py-3 px-3 text-amber-400 font-sans">~ Naive 10-video mean</td>
+                                    <td class="py-3 px-3 text-amber-400 font-sans">~ VPH velocity</td>
+                                    <td class="py-3 px-3 text-slate-500">✗ None</td>
+                                    <td class="py-3 px-3 text-slate-500">✗ None</td>
+                                </tr>
+                                <tr class="hover:bg-slate-800/30">
+                                    <td class="py-3 px-4 font-sans font-medium text-slate-100">2. Retention Curve Modeling</td>
+                                    <td class="py-3 px-3 text-emerald-400 font-bold font-sans">✓ Non-linear R(t) Fit (R²≥0.7)</td>
+                                    <td class="py-3 px-3 text-amber-400 font-sans">~ Raw line only</td>
+                                    <td class="py-3 px-3 text-slate-500">✗ No internal access</td>
+                                    <td class="py-3 px-3 text-slate-500">✗ No modeling</td>
+                                    <td class="py-3 px-3 text-slate-500">✗ No modeling</td>
+                                    <td class="py-3 px-3 text-slate-500">✗ No private data</td>
+                                </tr>
+                                <tr class="hover:bg-slate-800/30">
+                                    <td class="py-3 px-4 font-sans font-medium text-slate-100">3. 0-30s Hook & Rewatch Spikes</td>
+                                    <td class="py-3 px-3 text-emerald-400 font-bold font-sans">✓ Automated Diagnostics</td>
+                                    <td class="py-3 px-3 text-amber-400 font-sans">~ Key moments text</td>
+                                    <td class="py-3 px-3 text-slate-500">✗ None</td>
+                                    <td class="py-3 px-3 text-slate-500">✗ None</td>
+                                    <td class="py-3 px-3 text-slate-500">✗ None</td>
+                                    <td class="py-3 px-3 text-slate-500">✗ None</td>
+                                </tr>
+                                <tr class="hover:bg-slate-800/30">
+                                    <td class="py-3 px-4 font-sans font-medium text-slate-100">4. Machine Learning & Leakage</td>
+                                    <td class="py-3 px-3 text-emerald-400 font-bold font-sans">✓ Strict t₀ Feature Store (+91% uplift)</td>
+                                    <td class="py-3 px-3 text-slate-500">✗ None</td>
+                                    <td class="py-3 px-3 text-slate-500">✗ None</td>
+                                    <td class="py-3 px-3 text-rose-400 font-sans">✗ Generic LLM tags</td>
+                                    <td class="py-3 px-3 text-slate-500">✗ None</td>
+                                    <td class="py-3 px-3 text-rose-400 font-sans">✗ Naive linear trend</td>
+                                </tr>
+                                <tr class="hover:bg-slate-800/30">
+                                    <td class="py-3 px-4 font-sans font-medium text-slate-100">5. Unvarnished "Brutal Mode"</td>
+                                    <td class="py-3 px-3 text-emerald-400 font-bold font-sans">✓ Dedicated Executive Audit</td>
+                                    <td class="py-3 px-3 text-slate-500">✗ None (Neutral)</td>
+                                    <td class="py-3 px-3 text-slate-500">✗ None</td>
+                                    <td class="py-3 px-3 text-slate-500">✗ Polite vanity text</td>
+                                    <td class="py-3 px-3 text-slate-500">✗ Polite vanity text</td>
+                                    <td class="py-3 px-3 text-slate-500">✗ None</td>
+                                </tr>
+                                <tr class="hover:bg-slate-800/30">
+                                    <td class="py-3 px-4 font-sans font-medium text-slate-100">6. Grounding Evidence Contracts</td>
+                                    <td class="py-3 px-3 text-emerald-400 font-bold font-sans">✓ Full Contract (n, baseline, eff, conf)</td>
+                                    <td class="py-3 px-3 text-slate-500">✗ None</td>
+                                    <td class="py-3 px-3 text-slate-500">✗ None</td>
+                                    <td class="py-3 px-3 text-slate-500">✗ None</td>
+                                    <td class="py-3 px-3 text-slate-500">✗ None</td>
+                                    <td class="py-3 px-3 text-slate-500">✗ None</td>
+                                </tr>
+                                <tr class="hover:bg-slate-800/30">
+                                    <td class="py-3 px-4 font-sans font-medium text-slate-100">7. YouTube 30-Day TTL Compliance</td>
+                                    <td class="py-3 px-3 text-emerald-400 font-bold font-sans">✓ Automated Sweeper (Policy III.E.4)</td>
+                                    <td class="py-3 px-3 text-slate-500">N/A (First-party)</td>
+                                    <td class="py-3 px-3 text-rose-400 font-sans">✗ Permanent public cache</td>
+                                    <td class="py-3 px-3 text-rose-400 font-sans">✗ Permanent caching</td>
+                                    <td class="py-3 px-3 text-rose-400 font-sans">✗ Permanent caching</td>
+                                    <td class="py-3 px-3 text-rose-400 font-sans">✗ Permanent public cache</td>
+                                </tr>
+                                <tr class="hover:bg-slate-800/30">
+                                    <td class="py-3 px-4 font-sans font-medium text-slate-100">8. Group-Aware % Normalization</td>
+                                    <td class="py-3 px-3 text-emerald-400 font-bold font-sans">✓ Group Isolated (sum 100%)</td>
+                                    <td class="py-3 px-3 text-amber-400 font-sans">~ Raw Studio UI</td>
+                                    <td class="py-3 px-3 text-slate-500">✗ None</td>
+                                    <td class="py-3 px-3 text-slate-500">✗ None</td>
+                                    <td class="py-3 px-3 text-slate-500">✗ None</td>
+                                    <td class="py-3 px-3 text-slate-500">✗ None</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 6 Competitor Teardown Dossier Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- YouTube Studio -->
+                    <div class="glass-card p-5 space-y-3 border-slate-700">
+                        <div class="flex items-center justify-between">
+                            <h3 class="font-bold text-sm text-white">1. YouTube Studio Analytics</h3>
+                            <span class="cyber-badge cyber-badge-blue text-[9px]">First-Party Benchmark</span>
+                        </div>
+                        <div class="text-xs space-y-2">
+                            <p class="text-slate-300"><strong>Core Philosophy:</strong> Authoritative data warehouse logging every viewer interaction.</p>
+                            <div class="p-2.5 bg-emerald-500/10 border border-emerald-500/20 rounded-lg text-emerald-300 text-[11px]">
+                                <strong>What We Learned:</strong> Trust only first-party telemetry; second-by-second retention is the true heartbeat of algorithmic distribution.
+                            </div>
+                            <div class="p-2.5 bg-rose-500/10 border border-rose-500/20 rounded-lg text-rose-300 text-[11px]">
+                                <strong>Fatal Flaw:</strong> Purely descriptive, never prescriptive. Never tells creators what pacing cut or structural change to make. 72h latency trap.
+                            </div>
+                            <p class="text-cyan-400 text-[11px] font-semibold">Our Counter-Engineering: We added automated exponential curve fitting and prescriptive diagnostic fixes.</p>
+                        </div>
+                    </div>
+
+                    <!-- ViewStats -->
+                    <div class="glass-card p-5 space-y-3 border-slate-700">
+                        <div class="flex items-center justify-between">
+                            <h3 class="font-bold text-sm text-white">2. ViewStats (MrBeast)</h3>
+                            <span class="cyber-badge cyber-badge-cyan text-[9px]">Outlier Specialist</span>
+                        </div>
+                        <div class="text-xs space-y-2">
+                            <p class="text-slate-300"><strong>Core Philosophy:</strong> YouTube is a hit-driven packaging game. Track 10x outliers and thumbnail pivots.</p>
+                            <div class="p-2.5 bg-emerald-500/10 border border-emerald-500/20 rounded-lg text-emerald-300 text-[11px]">
+                                <strong>What We Learned:</strong> Outliers drive 80% of channel growth. Comparing a video to typical channel baseline is paramount.
+                            </div>
+                            <div class="p-2.5 bg-rose-500/10 border border-rose-500/20 rounded-lg text-rose-300 text-[11px]">
+                                <strong>Fatal Flaw:</strong> Naive arithmetic ratio (Views / Mean of last 10) gets distorted by Shorts or dead videos. Zero retention curve visibility.
+                            </div>
+                            <p class="text-cyan-400 text-[11px] font-semibold">Our Counter-Engineering: Replaced naive ratio with power-law robust IQR Z-Score ($IQR \times 0.7413$).</p>
+                        </div>
+                    </div>
+
+                    <!-- 1of10 -->
+                    <div class="glass-card p-5 space-y-3 border-slate-700">
+                        <div class="flex items-center justify-between">
+                            <h3 class="font-bold text-sm text-white">3. 1of10</h3>
+                            <span class="cyber-badge cyber-badge-purple text-[9px]">Ideation Engine</span>
+                        </div>
+                        <div class="text-xs space-y-2">
+                            <p class="text-slate-300"><strong>Core Philosophy:</strong> Reverse-engineer viral videos from tiny channels to prove universal audience interest.</p>
+                            <div class="p-2.5 bg-emerald-500/10 border border-emerald-500/20 rounded-lg text-emerald-300 text-[11px]">
+                                <strong>What We Learned:</strong> Proven outlier ideas eliminate guessing. High-performing titles follow distinct psychological archetypes.
+                            </div>
+                            <div class="p-2.5 bg-rose-500/10 border border-rose-500/20 rounded-lg text-rose-300 text-[11px]">
+                                <strong>Fatal Flaw:</strong> $49-$199/month search tool with zero post-upload diagnostics. Once you upload, it provides zero retention help.
+                            </div>
+                            <p class="text-cyan-400 text-[11px] font-semibold">Our Counter-Engineering: Integrated Pre-Publish AI Title Archetypes directly with retention modeling.</p>
+                        </div>
+                    </div>
+
+                    <!-- vidIQ -->
+                    <div class="glass-card p-5 space-y-3 border-slate-700">
+                        <div class="flex items-center justify-between">
+                            <h3 class="font-bold text-sm text-white">4. vidIQ</h3>
+                            <span class="cyber-badge cyber-badge-amber text-[9px]">SEO Legacy Giant</span>
+                        </div>
+                        <div class="text-xs space-y-2">
+                            <p class="text-slate-300"><strong>Core Philosophy:</strong> Metadata optimization, keyword search volume, and browser-injected competitor telemetry.</p>
+                            <div class="p-2.5 bg-emerald-500/10 border border-emerald-500/20 rounded-lg text-emerald-300 text-[11px]">
+                                <strong>What We Learned:</strong> Creators need contextual alerts inside their daily workflow; VPH (Views Per Hour) indicates immediate velocity.
+                            </div>
+                            <div class="p-2.5 bg-rose-500/10 border border-rose-500/20 rounded-lg text-rose-300 text-[11px]">
+                                <strong>Fatal Flaw:</strong> Over-indexes on obsolete "Tag SEO" (tags have <2% algorithm impact). Hallucinated generic AI titles.
+                            </div>
+                            <p class="text-cyan-400 text-[11px] font-semibold">Our Counter-Engineering: Discarded tag checklists; focused exclusively on CTR title meters and retention curves.</p>
+                        </div>
+                    </div>
+
+                    <!-- TubeBuddy -->
+                    <div class="glass-card p-5 space-y-3 border-slate-700">
+                        <div class="flex items-center justify-between">
+                            <h3 class="font-bold text-sm text-white">5. TubeBuddy</h3>
+                            <span class="cyber-badge cyber-badge-rose text-[9px]">Workflow Automation</span>
+                        </div>
+                        <div class="text-xs space-y-2">
+                            <p class="text-slate-300"><strong>Core Philosophy:</strong> Creator productivity, bulk processing, and Title/Thumbnail A/B experimentation.</p>
+                            <div class="p-2.5 bg-emerald-500/10 border border-emerald-500/20 rounded-lg text-emerald-300 text-[11px]">
+                                <strong>What We Learned:</strong> Packaging changes can revive stagnant uploads; creators need structured A/B testing frameworks.
+                            </div>
+                            <div class="p-2.5 bg-rose-500/10 border border-rose-500/20 rounded-lg text-rose-300 text-[11px]">
+                                <strong>Fatal Flaw:</strong> Heavy DOM injection slows down browsers. Declares A/B test "winners" on tiny sample sizes without seasonality controls.
+                            </div>
+                            <p class="text-cyan-400 text-[11px] font-semibold">Our Counter-Engineering: Implemented lightweight glassmorphic SPA + strict Evidence Object sample size rules ($n \ge 8$).</p>
+                        </div>
+                    </div>
+
+                    <!-- Social Blade -->
+                    <div class="glass-card p-5 space-y-3 border-slate-700">
+                        <div class="flex items-center justify-between">
+                            <h3 class="font-bold text-sm text-white">6. Social Blade</h3>
+                            <span class="cyber-badge cyber-badge-emerald text-[9px]">Public Ledger</span>
+                        </div>
+                        <div class="text-xs space-y-2">
+                            <p class="text-slate-300"><strong>Core Philosophy:</strong> The public scoreboard of channel subscriber counters and daily growth tracking.</p>
+                            <div class="p-2.5 bg-emerald-500/10 border border-emerald-500/20 rounded-lg text-emerald-300 text-[11px]">
+                                <strong>What We Learned:</strong> Creators love tracking growth milestones and seeing long-term multi-year trajectories.
+                            </div>
+                            <div class="p-2.5 bg-rose-500/10 border border-rose-500/20 rounded-lg text-rose-300 text-[11px]">
+                                <strong>Fatal Flaw:</strong> Surface-level public data only. Naive linear projections fail during algorithmic plateaus. 2010s ad-cluttered UI.
+                            </div>
+                            <p class="text-cyan-400 text-[11px] font-semibold">Our Counter-Engineering: Built an interactive 90-day compounding scenario planner based on real retention levers.</p>
+                        </div>
+                    </div>
+
+                    <!-- Tubular Labs -->
+                    <div class="glass-card p-5 space-y-3 border-slate-700">
+                        <div class="flex items-center justify-between">
+                            <h3 class="font-bold text-sm text-white">7. Tubular Labs</h3>
+                            <span class="cyber-badge cyber-badge-cyan text-[9px]">Agency Standard</span>
+                        </div>
+                        <div class="text-xs space-y-2">
+                            <p class="text-slate-300"><strong>Core Philosophy:</strong> Standardized 30-day velocity (V30 & ER30) for global media holding companies.</p>
+                            <div class="p-2.5 bg-emerald-500/10 border border-emerald-500/20 rounded-lg text-emerald-300 text-[11px]">
+                                <strong>What We Learned:</strong> Normalizing by 30-day window eliminates lifetime longevity bias, allowing apples-to-apples comparisons.
+                            </div>
+                            <div class="p-2.5 bg-rose-500/10 border border-rose-500/20 rounded-lg text-rose-300 text-[11px]">
+                                <strong>Fatal Flaw:</strong> $30k–$100k enterprise paywall for agency conglomerates; zero individual video pacing/hook diagnostics.
+                            </div>
+                            <p class="text-cyan-400 text-[11px] font-semibold">Our Counter-Engineering: Democratized V30/ER30 formulas directly into creator dashboard without enterprise lock-in.</p>
+                        </div>
+                    </div>
+
+                    <!-- HypeAuditor -->
+                    <div class="glass-card p-5 space-y-3 border-slate-700">
+                        <div class="flex items-center justify-between">
+                            <h3 class="font-bold text-sm text-white">8. HypeAuditor</h3>
+                            <span class="cyber-badge cyber-badge-emerald text-[9px]">Bot Forensics</span>
+                        </div>
+                        <div class="text-xs space-y-2">
+                            <p class="text-slate-300"><strong>Core Philosophy:</strong> Influencer fraud detection, engagement authenticity, and Audience Quality Score (AQS).</p>
+                            <div class="p-2.5 bg-emerald-500/10 border border-emerald-500/20 rounded-lg text-emerald-300 text-[11px]">
+                                <strong>What We Learned:</strong> Raw subscriber counts are pure vanity; authentic human engagement ratios determine brand trust.
+                            </div>
+                            <div class="p-2.5 bg-rose-500/10 border border-rose-500/20 rounded-lg text-rose-300 text-[11px]">
+                                <strong>Fatal Flaw:</strong> Calibrated for Instagram fashion/lifestyle influencers; fails on developer/technical YouTube retention patterns.
+                            </div>
+                            <p class="text-cyan-400 text-[11px] font-semibold">Our Counter-Engineering: Engineered developer-niche calibrated AQS combining code retention and technical comment depth.</p>
+                        </div>
+                    </div>
+
+                    <!-- NoxInfluencer -->
+                    <div class="glass-card p-5 space-y-3 border-slate-700">
+                        <div class="flex items-center justify-between">
+                            <h3 class="font-bold text-sm text-white">9. NoxInfluencer</h3>
+                            <span class="cyber-badge cyber-badge-purple text-[9px]">Sponsor Valuation</span>
+                        </div>
+                        <div class="text-xs space-y-2">
+                            <p class="text-slate-300"><strong>Core Philosophy:</strong> Commercial Fair Market Value (FMV) and CPM rate estimation for brand partnerships.</p>
+                            <div class="p-2.5 bg-emerald-500/10 border border-emerald-500/20 rounded-lg text-emerald-300 text-[11px]">
+                                <strong>What We Learned:</strong> Creators need transparency into the direct dollar value of their audience watch time.
+                            </div>
+                            <div class="p-2.5 bg-rose-500/10 border border-rose-500/20 rounded-lg text-rose-300 text-[11px]">
+                                <strong>Fatal Flaw:</strong> Uses generic $10-$20 gaming CPMs, undervaluing high-intent engineering/enterprise audiences by 300%.
+                            </div>
+                            <p class="text-cyan-400 text-[11px] font-semibold">Our Counter-Engineering: Integrated Tier-1 developer geographic multipliers ($52-$85 CPM) for accurate brand negotiation.</p>
+                        </div>
+                    </div>
+
+                    <!-- CreatorML -->
+                    <div class="glass-card p-5 space-y-3 border-slate-700">
+                        <div class="flex items-center justify-between">
+                            <h3 class="font-bold text-sm text-white">10. CreatorML</h3>
+                            <span class="cyber-badge cyber-badge-amber text-[9px]">Pre-Publish ML</span>
+                        </div>
+                        <div class="text-xs space-y-2">
+                            <p class="text-slate-300"><strong>Core Philosophy:</strong> Machine learning algorithms predicting video views before public release.</p>
+                            <div class="p-2.5 bg-emerald-500/10 border border-emerald-500/20 rounded-lg text-emerald-300 text-[11px]">
+                                <strong>What We Learned:</strong> Testing titles and video concepts prior to upload saves hundreds of hours of wasted production.
+                            </div>
+                            <div class="p-2.5 bg-rose-500/10 border border-rose-500/20 rounded-lg text-rose-300 text-[11px]">
+                                <strong>Fatal Flaw:</strong> Closed-source proprietary black box; zero diagnostic advice for what to fix in the first 30 seconds of video.
+                            </div>
+                            <p class="text-cyan-400 text-[11px] font-semibold">Our Counter-Engineering: Strict zero-leakage $t_0$ feature store (+91% uplift) coupled with second-by-second hook radar.</p>
+                        </div>
+                    </div>
+            </section>
+
+            <!-- TAB 15: LAYMAN GROWTH ACADEMY & COMPLETE CHANNEL PARAMETER DECRYPTER -->
+            <section id="tab-layman" class="space-y-8 hidden">
+                <!-- Hero Header -->
+                <div class="glass-card p-6 relative overflow-hidden border-amber-500/30">
+                    <div class="absolute top-0 right-0 w-96 h-96 bg-gradient-to-bl from-amber-500/10 via-yellow-500/5 to-transparent rounded-full pointer-events-none blur-3xl"></div>
+                    <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+                        <div class="space-y-2 max-w-3xl">
+                            <div class="flex items-center gap-2">
+                                <span class="layman-pill">Zero Jargon Guarantee</span>
+                                <span class="text-xs text-amber-400 font-semibold">Plain-English Master Guide</span>
+                            </div>
+                            <h1 class="text-3xl font-black tracking-tight text-white flex items-center gap-3">
+                                <span>👶 Layman Growth Academy</span>
+                            </h1>
+                            <p class="text-sm text-slate-300 leading-relaxed">
+                                Every single parameter, metric, and algorithm secret explained as if you have zero technical knowledge. No math degree required. Understand exactly why videos succeed or fail, and what simple steps to take right now.
+                            </p>
+                        </div>
+                        <div class="flex flex-wrap items-center gap-2">
+                            <a href="#layman-algorithm" class="px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-700 text-xs font-semibold text-slate-300 hover:text-white hover:border-amber-400 transition">1. The Algorithm</a>
+                            <a href="#layman-dictionary" class="px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-700 text-xs font-semibold text-slate-300 hover:text-white hover:border-amber-400 transition">2. Metric Dictionary</a>
+                            <a href="#layman-troubleshooter" class="px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-700 text-xs font-semibold text-slate-300 hover:text-white hover:border-amber-400 transition">3. Troubleshooter</a>
+                            <a href="#layman-blueprint" class="px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-700 text-xs font-semibold text-slate-300 hover:text-white hover:border-amber-400 transition">4. Growth Blueprint</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- MODULE 1: THE YOUTUBE ALGORITHM EXPLAINED TO A 10-YEAR-OLD -->
+                <div id="layman-algorithm" class="space-y-4">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h2 class="text-xl font-black text-white flex items-center gap-2">
+                                <span class="text-amber-400">#1</span>
+                                <span>The 2026 YouTube Algorithm Explained Simply</span>
+                            </h2>
+                            <p class="text-xs text-slate-400">Forget confusing formulas. Here is how YouTube actually decides who sees your videos.</p>
+                        </div>
+                        <span class="layman-pill">The Big Picture</span>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                        <!-- The Waiter Metaphor -->
+                        <div class="glass-card p-5 space-y-3 border-amber-500/20">
+                            <div class="flex items-center space-x-2 text-amber-300 font-bold text-sm">
+                                <span class="text-xl">🍽️</span>
+                                <span>The Giant Restaurant Analogy</span>
+                            </div>
+                            <p class="text-xs text-slate-300 leading-relaxed">
+                                Think of YouTube as the world's biggest 24/7 restaurant with <strong>2 billion diners</strong>. You are a chef making dishes (videos). The YouTube algorithm is not an evil robot — <strong>it is just a waiter trying to keep the customer happy</strong>.
+                            </p>
+                            <p class="text-xs text-slate-300 leading-relaxed">
+                                If a customer loved spicy pizza in the past, the waiter recommends other spicy pizzas. If the customer takes one bite of your dish and throws it away (leaves after 15 seconds), the waiter stops bringing your dish to other tables. If they finish the whole plate, the waiter tells the entire dining room!
+                            </p>
+                            <div class="analogy-box text-xs">
+                                <strong>Takeaway:</strong> Don't try to "trick" the algorithm. Focus on cooking a dish so delicious the customer stays until the last bite.
+                            </div>
+                        </div>
+
+                        <!-- The Leaky Bucket Metaphor -->
+                        <div class="glass-card p-5 space-y-3 border-cyan-500/20">
+                            <div class="flex items-center space-x-2 text-cyan-300 font-bold text-sm">
+                                <span class="text-xl">🪣</span>
+                                <span>The Leaky Bucket Analogy</span>
+                            </div>
+                            <p class="text-xs text-slate-300 leading-relaxed">
+                                Imagine your video is a bucket, and views are water you pour in. Your thumbnail and title open the tap to pour water in.
+                            </p>
+                            <p class="text-xs text-slate-300 leading-relaxed">
+                                But if your bucket has a massive hole at the bottom (boring opening, long logos, wasting time), <strong>all the water drains out immediately</strong>. Getting 10,000 people to click is completely useless if 9,000 leave in 20 seconds.
+                            </p>
+                            <div class="action-box text-xs">
+                                <strong>Golden Fix:</strong> Plug the hole first! Deliver on your title promise in the first 5 seconds, cut intro logos, and keep your pacing brisk.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- The 3 Simple Questions YouTube Asks -->
+                    <div class="glass-card p-5 space-y-4">
+                        <h3 class="font-bold text-sm text-white flex items-center gap-2">
+                            <span>The Only 3 Questions YouTube Cares About:</span>
+                        </h3>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+                            <div class="p-4 bg-slate-900/60 rounded-xl border border-slate-800 space-y-2">
+                                <div class="text-lg font-black text-cyan-400">Question 1: Do they click?</div>
+                                <div class="text-[11px] text-slate-400">Technical term: <strong>Click-Through Rate (CTR)</strong></div>
+                                <p class="text-slate-300">When your thumbnail appears on their phone screen, does it spark enough curiosity or emotion to make them tap?</p>
+                            </div>
+                            <div class="p-4 bg-slate-900/60 rounded-xl border border-slate-800 space-y-2">
+                                <div class="text-lg font-black text-amber-400">Question 2: Do they stick?</div>
+                                <div class="text-[11px] text-slate-400">Technical term: <strong>Audience Retention</strong></div>
+                                <p class="text-slate-300">Do they actually stay and watch, or did your video feel slow, boring, or misleading? Did you satisfy the curiosity?</p>
+                            </div>
+                            <div class="p-4 bg-slate-900/60 rounded-xl border border-slate-800 space-y-2">
+                                <div class="text-lg font-black text-emerald-400">Question 3: Do they smile & watch more?</div>
+                                <div class="text-[11px] text-slate-400">Technical term: <strong>Satisfaction & Session Time</strong></div>
+                                <p class="text-slate-300">Do they like, comment, subscribe, or click another video on your channel afterwards? Or do they close YouTube in frustration?</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- MODULE 2: COMPLETE 18-PARAMETER VISUAL DICTIONARY -->
+                <div id="layman-dictionary" class="space-y-4">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h2 class="text-xl font-black text-white flex items-center gap-2">
+                                <span class="text-amber-400">#2</span>
+                                <span>The Complete Plain-English Metric Dictionary</span>
+                            </h2>
+                            <p class="text-xs text-slate-400">Every single number and parameter on your dashboard translated into plain everyday language.</p>
+                        </div>
+                        <span class="layman-pill">18 Parameters Decrypted</span>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <!-- 1. Views -->
+                        <div class="layman-card space-y-2">
+                            <div class="flex items-center justify-between">
+                                <span class="font-bold text-sm text-white">1. Total Views</span>
+                                <span class="analogy-box text-[10px] py-0.5 px-2">Store Visitors</span>
+                            </div>
+                            <p class="text-xs text-slate-300">The total number of times someone clicked and watched at least 30 seconds of your video.</p>
+                            <div class="text-[11px] text-slate-400"><strong>Everyday Metaphor:</strong> How many pairs of feet walked through your shop's front door today.</div>
+                            <div class="action-box text-[10px] py-1 px-2">
+                                <strong>Action:</strong> If views are low, fix your Title & Thumbnail to make more people want to enter.
+                            </div>
+                        </div>
+
+                        <!-- 2. Watch Time -->
+                        <div class="layman-card space-y-2">
+                            <div class="flex items-center justify-between">
+                                <span class="font-bold text-sm text-white">2. Watch Time (Hours)</span>
+                                <span class="analogy-box text-[10px] py-0.5 px-2">Time in Aisle</span>
+                            </div>
+                            <p class="text-xs text-slate-300">The total hours of human life viewers spent watching your content.</p>
+                            <div class="text-[11px] text-slate-400"><strong>Everyday Metaphor:</strong> If someone enters your store, did they look at a shirt for 10 seconds or stay browsing for 30 minutes?</div>
+                            <div class="action-box text-[10px] py-1 px-2">
+                                <strong>Action:</strong> YouTube loves watch hours. Making 15-minute high-retention videos generates 4x more watch hours than 5-minute clips.
+                            </div>
+                        </div>
+
+                        <!-- 3. Average View Duration (AVD) -->
+                        <div class="layman-card space-y-2">
+                            <div class="flex items-center justify-between">
+                                <span class="font-bold text-sm text-white">3. Average View Duration (AVD)</span>
+                                <span class="analogy-box text-[10px] py-0.5 px-2">Average Visit Time</span>
+                            </div>
+                            <p class="text-xs text-slate-300">The exact number of minutes and seconds the typical viewer watches before leaving.</p>
+                            <div class="text-[11px] text-slate-400"><strong>Everyday Metaphor:</strong> On average, how long someone stays at your dinner party before saying goodbye.</div>
+                            <div class="action-box text-[10px] py-1 px-2">
+                                <strong>Action:</strong> If your video is 20 minutes long and AVD is 9 minutes (45%), that is fantastic! Aim for higher absolute minutes.
+                            </div>
+                        </div>
+
+                        <!-- 4. Average View Percentage (AVP) -->
+                        <div class="layman-card space-y-2">
+                            <div class="flex items-center justify-between">
+                                <span class="font-bold text-sm text-white">4. View Percentage (AVP)</span>
+                                <span class="analogy-box text-[10px] py-0.5 px-2">Movie Popcorn Test</span>
+                            </div>
+                            <p class="text-xs text-slate-300">What fraction of the total video did the average viewer watch (e.g. 50% means they watched half).</p>
+                            <div class="text-[11px] text-slate-400"><strong>Everyday Metaphor:</strong> Did they eat the whole pizza or only eat half the slice and leave the crust?</div>
+                            <div class="action-box text-[10px] py-1 px-2">
+                                <strong>Action:</strong> Target >50% for 10-minute videos and >40% for 20-minute deep dives.
+                            </div>
+                        </div>
+
+                        <!-- 5. 0-30s Hook Drop-Off -->
+                        <div class="layman-card space-y-2">
+                            <div class="flex items-center justify-between">
+                                <span class="font-bold text-sm text-white">5. 0-30s Hook Drop-Off</span>
+                                <span class="analogy-box text-[10px] py-0.5 px-2">The Handshake</span>
+                            </div>
+                            <p class="text-xs text-slate-300">The percentage of viewers who abandon your video within the first 30 seconds.</p>
+                            <div class="text-[11px] text-slate-400"><strong>Everyday Metaphor:</strong> First impressions on a blind date. In 30 seconds, they decide whether you're interesting or boring.</div>
+                            <div class="action-box text-[10px] py-1 px-2">
+                                <strong>Action:</strong> Keep >70% of viewers past 30 seconds! Never start with "Hey guys, welcome back to my channel." Jump straight to the point.
+                            </div>
+                        </div>
+
+                        <!-- 6. Audience Retention Curve -->
+                        <div class="layman-card space-y-2">
+                            <div class="flex items-center justify-between">
+                                <span class="font-bold text-sm text-white">6. Retention Curve R(t)</span>
+                                <span class="analogy-box text-[10px] py-0.5 px-2">Heartbeat Monitor</span>
+                            </div>
+                            <p class="text-xs text-slate-300">A second-by-second graph showing exactly where people stayed and where they clicked away.</p>
+                            <div class="text-[11px] text-slate-400"><strong>Everyday Metaphor:</strong> A lie detector test for your video. A sudden cliff means you got boring or went off topic.</div>
+                            <div class="action-box text-[10px] py-1 px-2">
+                                <strong>Action:</strong> Look at sharp dips in your curve. Cut whatever you said there in your next video!
+                            </div>
+                        </div>
+
+                        <!-- 7. Click-Through Rate (CTR) -->
+                        <div class="layman-card space-y-2">
+                            <div class="flex items-center justify-between">
+                                <span class="font-bold text-sm text-white">7. Click-Through Rate (CTR)</span>
+                                <span class="analogy-box text-[10px] py-0.5 px-2">Window Shopping</span>
+                            </div>
+                            <p class="text-xs text-slate-300">Out of 100 people who saw your thumbnail on their screen, how many actually clicked it.</p>
+                            <div class="text-[11px] text-slate-400"><strong>Everyday Metaphor:</strong> Out of 100 people walking past a bakery window, how many stopped and opened the door?</div>
+                            <div class="action-box text-[10px] py-1 px-2">
+                                <strong>Action:</strong> 4% to 8% is typical. Anything over 10% in the first 24 hours means your packaging is on fire.
+                            </div>
+                        </div>
+
+                        <!-- 8. Virality Outlier Score (Robust Z) -->
+                        <div class="layman-card space-y-2">
+                            <div class="flex items-center justify-between">
+                                <span class="font-bold text-sm text-white">8. Virality Outlier Score</span>
+                                <span class="analogy-box text-[10px] py-0.5 px-2">Home Run Meter</span>
+                            </div>
+                            <p class="text-xs text-slate-300">Measures whether this video is performing way better than your normal typical uploads.</p>
+                            <div class="text-[11px] text-slate-400"><strong>Everyday Metaphor:</strong> In baseball, is this hit a normal single base, or did you knock it out of the park for a grand slam?</div>
+                            <div class="action-box text-[10px] py-1 px-2">
+                                <strong>Action:</strong> When a video scores > 1.5 Z (Viral Breakout), immediately make a sequel or spin-off on that same topic!
+                            </div>
+                        </div>
+
+                        <!-- 9. Browse Features (Home Feed) -->
+                        <div class="layman-card space-y-2">
+                            <div class="flex items-center justify-between">
+                                <span class="font-bold text-sm text-white">9. Browse (Home Feed)</span>
+                                <span class="analogy-box text-[10px] py-0.5 px-2">The Couch Tap</span>
+                            </div>
+                            <p class="text-xs text-slate-300">Views from people opening YouTube on their phone or TV and picking your video off their front page.</p>
+                            <div class="text-[11px] text-slate-400"><strong>Everyday Metaphor:</strong> A waiter walking up to a diner and handing them a chef's special without them asking.</div>
+                            <div class="action-box text-[10px] py-1 px-2">
+                                <strong>Action:</strong> Browse traffic is where 100k+ viral hits happen. Requires high CTR and broad curiosity titles.
+                            </div>
+                        </div>
+
+                        <!-- 10. Suggested Videos -->
+                        <div class="layman-card space-y-2">
+                            <div class="flex items-center justify-between">
+                                <span class="font-bold text-sm text-white">10. Suggested Videos</span>
+                                <span class="analogy-box text-[10px] py-0.5 px-2">You Might Also Like</span>
+                            </div>
+                            <p class="text-xs text-slate-300">Views coming from the right-hand column or the "Up Next" autoplay video after someone finishes another video.</p>
+                            <div class="text-[11px] text-slate-400"><strong>Everyday Metaphor:</strong> "If you loved that comedy movie, you will love this comedy show next."</div>
+                            <div class="action-box text-[10px] py-1 px-2">
+                                <strong>Action:</strong> Create natural 2-part video pairs so viewers binge from one to the next automatically.
+                            </div>
+                        </div>
+
+                        <!-- 11. YouTube Search -->
+                        <div class="layman-card space-y-2">
+                            <div class="flex items-center justify-between">
+                                <span class="font-bold text-sm text-white">11. YouTube Search</span>
+                                <span class="analogy-box text-[10px] py-0.5 px-2">The Hardware Store</span>
+                            </div>
+                            <p class="text-xs text-slate-300">People who actively typed words into the search bar looking for a specific solution.</p>
+                            <div class="text-[11px] text-slate-400"><strong>Everyday Metaphor:</strong> Walking into a hardware store asking: "Where are the 10mm screws?"</div>
+                            <div class="action-box text-[10px] py-1 px-2">
+                                <strong>Action:</strong> Search videos bring steady views for years (evergreen), but rarely blow up virally overnight.
+                            </div>
+                        </div>
+
+                        <!-- 12. Net Subscribers & Conversion -->
+                        <div class="layman-card space-y-2">
+                            <div class="flex items-center justify-between">
+                                <span class="font-bold text-sm text-white">12. Subscriber Conversion</span>
+                                <span class="analogy-box text-[10px] py-0.5 px-2">Loyalty Punch Card</span>
+                            </div>
+                            <p class="text-xs text-slate-300">How many subscribers you gained minus how many unsubscribed for every 1,000 views.</p>
+                            <div class="text-[11px] text-slate-400"><strong>Everyday Metaphor:</strong> People who liked your restaurant so much they asked to be on your VIP member list.</div>
+                            <div class="action-box text-[10px] py-1 px-2">
+                                <strong>Action:</strong> Healthy benchmark: 4 to 8 subscribers per 1,000 views. Remind viewers why subscribing helps them!
+                            </div>
+                        </div>
+
+                        <!-- 13. Returning vs New Viewers -->
+                        <div class="layman-card space-y-2">
+                            <div class="flex items-center justify-between">
+                                <span class="font-bold text-sm text-white">13. Returning Viewers</span>
+                                <span class="analogy-box text-[10px] py-0.5 px-2">Regulars at the Bar</span>
+                            </div>
+                            <p class="text-xs text-slate-300">The balance between people who have watched your videos before vs people seeing you for the first time.</p>
+                            <div class="text-[11px] text-slate-400"><strong>Everyday Metaphor:</strong> Regular customers who sit at the counter every Friday vs tourists walking in off the street.</div>
+                            <div class="action-box text-[10px] py-1 px-2">
+                                <strong>Action:</strong> You need both! Returning viewers give you early momentum; new viewers allow your channel to grow.
+                            </div>
+                        </div>
+
+                        <!-- 14. Content Clusters -->
+                        <div class="layman-card space-y-2">
+                            <div class="flex items-center justify-between">
+                                <span class="font-bold text-sm text-white">14. Content Clusters</span>
+                                <span class="analogy-box text-[10px] py-0.5 px-2">The Restaurant Menu</span>
+                            </div>
+                            <p class="text-xs text-slate-300">Grouping your videos by theme or format (e.g. System Design, Database Internals, Coding Tutorials).</p>
+                            <div class="text-[11px] text-slate-400"><strong>Everyday Metaphor:</strong> The appetizers, burgers, and dessert sections of your menu. Which section sells best?</div>
+                            <div class="action-box text-[10px] py-1 px-2">
+                                <strong>Action:</strong> Double down on your winning cluster! If "System Design" gets 3x views, make it your channel's flagship.
+                            </div>
+                        </div>
+
+                        <!-- 15. Audience Quality Score (AQS) -->
+                        <div class="layman-card space-y-2">
+                            <div class="flex items-center justify-between">
+                                <span class="font-bold text-sm text-white">15. Audience Quality Score</span>
+                                <span class="analogy-box text-[10px] py-0.5 px-2">Bot & Ghost Detector</span>
+                            </div>
+                            <p class="text-xs text-slate-300">An index (0-100) auditing whether your audience consists of real engaged humans or passive dead accounts.</p>
+                            <div class="text-[11px] text-slate-400"><strong>Everyday Metaphor:</strong> Checking whether people clapping in the crowd are real fans or paid mannequins.</div>
+                            <div class="action-box text-[10px] py-1 px-2">
+                                <strong>Action:</strong> Your score is 99.1/100 (Superfans)! Brands will pay premium rates for your authentic human audience.
+                            </div>
+                        </div>
+
+                        <!-- 16. Tubular V30 Velocity -->
+                        <div class="layman-card space-y-2">
+                            <div class="flex items-center justify-between">
+                                <span class="font-bold text-sm text-white">16. Tubular V30 Velocity</span>
+                                <span class="analogy-box text-[10px] py-0.5 px-2">The 30-Day Fair Test</span>
+                            </div>
+                            <p class="text-xs text-slate-300">How many views a video gets in its first 30 days, evening the playing field between old and new uploads.</p>
+                            <div class="text-[11px] text-slate-400"><strong>Everyday Metaphor:</strong> Comparing how fast a car accelerated in its first 30 seconds, not how far it drove over 5 years.</div>
+                            <div class="action-box text-[10px] py-1 px-2">
+                                <strong>Action:</strong> Allows you to judge if your recent uploads are actually stronger than videos posted 2 years ago.
+                            </div>
+                        </div>
+
+                        <!-- 17. Commercial FMV & CPM -->
+                        <div class="layman-card space-y-2">
+                            <div class="flex items-center justify-between">
+                                <span class="font-bold text-sm text-white">17. Sponsorship Value (FMV)</span>
+                                <span class="analogy-box text-[10px] py-0.5 px-2">Brand Rate Card</span>
+                            </div>
+                            <p class="text-xs text-slate-300">The estimated fair dollar amount a brand sponsor should pay you to mention their software or product.</p>
+                            <div class="text-[11px] text-slate-400"><strong>Everyday Metaphor:</strong> How much a billboard on your front lawn is worth to an advertiser.</div>
+                            <div class="action-box text-[10px] py-1 px-2">
+                                <strong>Action:</strong> Technical software channels command $50–$85 CPM. Your 60s integration value is ~$9,960! Don't sell out cheap.
+                            </div>
+                        </div>
+
+                        <!-- 18. The 72-Hour Latency Window -->
+                        <div class="layman-card space-y-2">
+                            <div class="flex items-center justify-between">
+                                <span class="font-bold text-sm text-white">18. The 72-Hour Latency</span>
+                                <span class="analogy-box text-[10px] py-0.5 px-2">Don't Panic Rule</span>
+                            </div>
+                            <p class="text-xs text-slate-300">YouTube's internal accounting delay while it filters spam, cleans up duplicate views, and verifies stats.</p>
+                            <div class="text-[11px] text-slate-400"><strong>Everyday Metaphor:</strong> Waiting for your bank check to clear before spending the money.</div>
+                            <div class="action-box text-[10px] py-1 px-2">
+                                <strong>Action:</strong> Never panic change your title or thumbnail within the first 6 hours unless CTR is under 2%. Give it 48 hours to settle.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- MODULE 3: THE CREATOR EMERGENCY ROOM -->
+                <div id="layman-troubleshooter" class="space-y-4">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h2 class="text-xl font-black text-white flex items-center gap-2">
+                                <span class="text-amber-400">#3</span>
+                                <span>The Creator Emergency Room: Plain-English Fixes</span>
+                            </h2>
+                            <p class="text-xs text-slate-400">If your channel has a problem, find the symptom below and follow the exact 1-step medicine.</p>
+                        </div>
+                        <span class="layman-pill">Symptom & Cure</span>
+                    </div>
+
+                    <div class="space-y-3">
+                        <div class="glass-card p-4 space-y-2 border-slate-800">
+                            <div class="flex items-center justify-between">
+                                <span class="font-bold text-rose-400 text-xs flex items-center gap-1.5">
+                                    <i data-lucide="alert-circle" class="w-4 h-4"></i>
+                                    <span>Symptom 1: "My video has very low views (under 500), but everyone who watches it leaves a nice comment."</span>
+                                </span>
+                                <span class="cyber-badge cyber-badge-rose text-[9px]">Packaging Failure</span>
+                            </div>
+                            <p class="text-xs text-slate-300"><strong>Diagnosis:</strong> Your video content is great, but your <strong>Title & Thumbnail are invisible</strong>. People simply aren't clicking.</p>
+                            <div class="action-box text-xs">
+                                <strong>The Medicine:</strong> Rework your thumbnail today! Pick 1 main focal point, use high contrast colors, and make your title ask a curious question rather than stating a dry fact.
+                            </div>
+                        </div>
+
+                        <div class="glass-card p-4 space-y-2 border-slate-800">
+                            <div class="flex items-center justify-between">
+                                <span class="font-bold text-amber-400 text-xs flex items-center gap-1.5">
+                                    <i data-lucide="alert-triangle" class="w-4 h-4"></i>
+                                    <span>Symptom 2: "People click my video, but my retention curve drops off a cliff in the first 30 seconds."</span>
+                                </span>
+                                <span class="cyber-badge cyber-badge-amber text-[9px]">Broken Hook / Mislead</span>
+                            </div>
+                            <p class="text-xs text-slate-300"><strong>Diagnosis:</strong> You made a promise on the thumbnail, but in the first 20 seconds you rambled, showed an intro logo, or talked about yourself.</p>
+                            <div class="action-box text-xs">
+                                <strong>The Medicine:</strong> In your very first sentence, confirm the thumbnail premise! Say: <em>"In this video, we are building X so you can avoid Y mistake."</em> Cut channel animations forever.
+                            </div>
+                        </div>
+
+                        <div class="glass-card p-4 space-y-2 border-slate-800">
+                            <div class="flex items-center justify-between">
+                                <span class="font-bold text-blue-400 text-xs flex items-center gap-1.5">
+                                    <i data-lucide="info" class="w-4 h-4"></i>
+                                    <span>Symptom 3: "My video got 5,000 views in the first 24 hours, and then suddenly flatlined to zero."</span>
+                                </span>
+                                <span class="cyber-badge cyber-badge-blue text-[9px]">Subscriber Bubble Hit</span>
+                            </div>
+                            <p class="text-xs text-slate-300"><strong>Diagnosis:</strong> Your loyal subscribers watched it, but when YouTube tested it on broader strangers on their home feed, those strangers clicked away.</p>
+                            <div class="action-box text-xs">
+                                <strong>The Medicine:</strong> Don't panic. Check your traffic sources. If you want broad appeal, make sure your topic doesn't require 5 prerequisite videos to understand.
+                            </div>
+                        </div>
+
+                        <div class="glass-card p-4 space-y-2 border-slate-800">
+                            <div class="flex items-center justify-between">
+                                <span class="font-bold text-purple-400 text-xs flex items-center gap-1.5">
+                                    <i data-lucide="help-circle" class="w-4 h-4"></i>
+                                    <span>Symptom 4: "I get 20,000 views, but almost nobody subscribes to my channel."</span>
+                                </span>
+                                <span class="cyber-badge cyber-badge-purple text-[9px]">One-Off Problem Trap</span>
+                            </div>
+                            <p class="text-xs text-slate-300"><strong>Diagnosis:</strong> You solved a specific temporary bug or headache. The viewer got their answer and left. They have no idea what you do next.</p>
+                            <div class="action-box text-xs">
+                                <strong>The Medicine:</strong> Give them a reason to stick around! Say: <em>"Next week we are diving into advanced distributed databases, so hit subscribe so you don't miss part 2."</em>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- MODULE 4: 4-STAGE GROWTH BLUEPRINT FOR BEGINNERS -->
+                <div id="layman-blueprint" class="space-y-4">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h2 class="text-xl font-black text-white flex items-center gap-2">
+                                <span class="text-amber-400">#4</span>
+                                <span>The 4-Stage Zero-to-Hero Growth Blueprint</span>
+                            </h2>
+                            <p class="text-xs text-slate-400">The clear roadmap from your very first upload to a sustainable, profitable channel.</p>
+                        </div>
+                        <span class="layman-pill">Channel Roadmap</span>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 text-xs">
+                        <div class="p-4 bg-slate-900/70 border border-slate-800 rounded-xl space-y-2">
+                            <div class="cyber-badge cyber-badge-cyan text-[10px]">Stage 1</div>
+                            <div class="text-sm font-bold text-white">0 to 1,000 Subs</div>
+                            <div class="text-amber-400 font-semibold text-[11px]">The Search Foundation</div>
+                            <p class="text-slate-300 text-[11px]">Nobody knows who you are. Do not make vlogs or opinion pieces. Make videos solving specific painful problems people search for every day.</p>
+                            <span class="text-[10px] text-slate-500 block pt-1">Milestone: 4,000 Watch Hours & Partner Program.</span>
+                        </div>
+
+                        <div class="p-4 bg-slate-900/70 border border-slate-800 rounded-xl space-y-2">
+                            <div class="cyber-badge cyber-badge-blue text-[10px]">Stage 2</div>
+                            <div class="text-sm font-bold text-white">1k to 10,000 Subs</div>
+                            <div class="text-cyan-400 font-semibold text-[11px]">The Signature Series</div>
+                            <p class="text-slate-300 text-[11px]">Find the 1 topic where you got the most watch time. Turn it into a recurring signature series (e.g. System Design breakdowns) and publish consistently.</p>
+                            <span class="text-[10px] text-slate-500 block pt-1">Milestone: Predictable baseline views per upload.</span>
+                        </div>
+
+                        <div class="p-4 bg-slate-900/70 border border-slate-800 rounded-xl space-y-2">
+                            <div class="cyber-badge cyber-badge-purple text-[10px]">Stage 3</div>
+                            <div class="text-sm font-bold text-white">10k to 100k Subs</div>
+                            <div class="text-purple-400 font-semibold text-[11px]">Browse Outlier Hunting</div>
+                            <p class="text-slate-300 text-[11px]">Pivot from purely search-based videos to broad curiosity titles that appeal to anyone in software engineering. Chase 3x-10x virality outliers.</p>
+                            <span class="text-[10px] text-slate-500 block pt-1">Milestone: First $5,000 brand sponsorships.</span>
+                        </div>
+
+                        <div class="p-4 bg-slate-900/70 border border-slate-800 rounded-xl space-y-2">
+                            <div class="cyber-badge cyber-badge-emerald text-[10px]">Stage 4</div>
+                            <div class="text-sm font-bold text-white">100k+ Subs</div>
+                            <div class="text-emerald-400 font-semibold text-[11px]">The Media Institution</div>
+                            <p class="text-slate-300 text-[11px]">You have high brand equity. Optimize your sponsorship rates ($70+ CPM), cross-pollinate to a newsletter or community, and build evergreen asset libraries.</p>
+                            <span class="text-[10px] text-slate-500 block pt-1">Milestone: Full-time media company scale.</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Video Drilldown Modal -->
+    <div id="video-drilldown-modal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
+        <div class="glass-card border-darkborder max-w-3xl w-full p-6 space-y-4 max-h-[90vh] overflow-y-auto">
+            <div class="flex items-center justify-between border-b border-darkborder pb-3">
+                <div>
+                    <h3 class="font-bold text-sm text-white" id="drill-video-title">Video Deep Dive Analysis</h3>
+                    <div class="text-[11px] text-slate-400 flex items-center gap-2 mt-0.5">
+                        <span id="drill-format-badge" class="cyber-badge cyber-badge-blue text-[10px]">Deep Dive</span>
+                        <span id="drill-duration-text">Duration: 18m 20s</span>
+                    </div>
+                </div>
+                <button onclick="closeDrilldownModal()" class="text-slate-400 hover:text-white p-1">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs" id="drill-metrics-grid"></div>
+
+            <div class="p-4 bg-slate-900/60 border border-darkborder rounded-xl">
+                <h4 class="font-bold text-xs text-slate-200 mb-2">Audience Retention Decay Curve</h4>
+                <div class="h-60">
+                    <canvas id="chart-drilldown-retention"></canvas>
+                </div>
+            </div>
+
+            <div>
+                <h4 class="font-bold text-xs text-slate-200 uppercase tracking-wider mb-2">Algorithmic Diagnostic Insights</h4>
+                <div class="space-y-2.5" id="drill-recommendations-list"></div>
+            </div>
+
+            <div class="flex justify-end pt-2">
+                <button onclick="closeDrilldownModal()" class="px-4 py-1.5 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white text-xs font-semibold">
+                    Done
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Evidence Object Popover Modal -->
+    <div id="evidence-modal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
+        <div class="glass-card border-darkborder max-w-lg w-full p-6 space-y-4">
+            <div class="flex items-center justify-between border-b border-darkborder pb-3">
+                <div class="flex items-center space-x-2">
+                    <i data-lucide="file-check-2" class="w-4 h-4 text-cyan-400"></i>
+                    <h3 class="font-bold text-sm text-white">Statistical Evidence Contract</h3>
+                </div>
+                <button onclick="closeEvidenceModal()" class="text-slate-400 hover:text-white p-1">
+                    <i data-lucide="x" class="w-4 h-4"></i>
+                </button>
+            </div>
+
+            <div class="space-y-3 text-xs" id="evidence-content-body"></div>
+
+            <div class="flex justify-end pt-2">
+                <button onclick="closeEvidenceModal()" class="px-4 py-1.5 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white text-xs font-semibold">
+                    Acknowledge Contract
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Futuristic Command Palette Modal (Ctrl + K) -->
+    <div id="command-palette-backdrop" class="hidden fixed inset-0 z-50 flex items-start justify-center pt-24 p-4">
+        <div class="glass-card border-cyan-500/40 max-w-xl w-full p-4 space-y-3 shadow-2xl shadow-cyan-950/50 animate-in fade-in zoom-in-95 duration-150">
+            <div class="relative">
+                <i data-lucide="search" class="w-4 h-4 text-cyan-400 absolute left-3 top-3"></i>
+                <input type="text" id="cmd-palette-input" oninput="filterCommandPalette(this.value)" placeholder="Type a command or video title..." class="w-full bg-slate-900 border border-white/10 rounded-xl pl-9 pr-10 py-2.5 text-sm text-white focus:outline-none focus:border-cyan-500 font-medium">
+                <kbd class="absolute right-3 top-3 px-1.5 py-0.5 rounded bg-slate-800 border border-slate-700 text-[10px] font-mono text-slate-400">ESC</kbd>
+            </div>
+
+            <div class="max-h-72 overflow-y-auto space-y-1" id="cmd-palette-results">
+                <!-- Populated dynamically -->
+            </div>
+
+            <div class="border-t border-darkborder pt-2 flex items-center justify-between text-[11px] text-slate-500">
+                <span>Navigation: <kbd class="px-1 bg-slate-800 rounded">↑</kbd> <kbd class="px-1 bg-slate-800 rounded">↓</kbd> to move, <kbd class="px-1 bg-slate-800 rounded">Enter</kbd> to select</span>
+                <span>Press <kbd class="px-1 bg-slate-800 rounded">ESC</kbd> to close</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating Toast Notification Container -->
+    <div id="toast-container"></div>
+
+    <!-- Scripts -->
+    <script src="app.js?v=2.0.0"></script>
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+</html>
